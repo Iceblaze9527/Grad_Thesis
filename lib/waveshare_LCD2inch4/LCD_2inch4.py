@@ -1,7 +1,9 @@
+
 import time
 from . import lcdconfig
 
 class LCD_2inch4(lcdconfig.RaspberryPi):
+
     width = 240
     height = 320 
     def command(self, cmd):
@@ -11,23 +13,23 @@ class LCD_2inch4(lcdconfig.RaspberryPi):
     def data(self, val):
         self.digital_write(self.DC_PIN, self.GPIO.HIGH)
         self.spi_writebyte([val])
+    
     def reset(self):
-        """Reset the display"""
-        #self.GPIO.output(self.RST_PIN,self.GPIO.HIGH)
-        #time.sleep(0.01)
-        #self.GPIO.output(self.RST_PIN,self.GPIO.LOW)
-        #time.sleep(0.01)
+        """Reset the display"""# 防止黑色条纹
+        # self.GPIO.output(self.RST_PIN,self.GPIO.HIGH)
+        # time.sleep(0.01)
+        # self.GPIO.output(self.RST_PIN,self.GPIO.LOW)
+        # time.sleep(0.01)
         self.GPIO.output(self.RST_PIN,self.GPIO.HIGH)
         time.sleep(0.01)
-
+        
     def Init(self):
         """Initialize dispaly"""  
         self.module_init()
         self.reset()
 
-        self.command(0x11);'''Sleep out'''
-        self.command(0x28);
-        self.command(0x34);
+        # self.command(0x11);'''Sleep out'''
+
         self.command(0xCF);
         self.data(0x00);
         self.data(0xC1);
@@ -111,10 +113,11 @@ class LCD_2inch4(lcdconfig.RaspberryPi):
         self.data(0x30);
         self.data(0x38);
         self.data(0x0F);
+
+        self.command(0x11);'''Sleep out'''## 新改动（可有可无）
         self.command(0x29);'''Display on'''
-        self._pwm.start(100);
 
-
+  
     def SetWindows(self, Xstart, Ystart, Xend, Yend):
         #set the X coordinates
         self.command(0x2A)
@@ -130,7 +133,7 @@ class LCD_2inch4(lcdconfig.RaspberryPi):
         self.data(Yend>>8)
         self.data((Yend - 1) & 0xff )
 
-        self.command(0x2C)    
+        self.command(0x2C)
         
     def ShowImage(self,Image,Xstart=0,Ystart=0):
         """Set buffer to value of Python Imaging Library image."""
@@ -165,11 +168,11 @@ class LCD_2inch4(lcdconfig.RaspberryPi):
             self.SetWindows ( 0, 0, self.width, self.height)
             self.digital_write(self.DC_PIN,self.GPIO.HIGH)
             for i in range(0,len(pix),4096):
-                self.spi_writebyte(pix[i:i+4096])
-
+                self.spi_writebyte(pix[i:i+4096])		
+                
     def clear(self):
         """Clear contents of image buffer"""
-        _buffer = [0xff]*(self.width * self.height * 2)
+        _buffer = [0x00]*(self.width * self.height * 2)## buffer modified
         self.SetWindows ( 0, 0, self.width, self.height)
         self.digital_write(self.DC_PIN,self.GPIO.HIGH)
         for i in range(0,len(_buffer),4096):

@@ -2,7 +2,7 @@
 **.ipynb_checkpoints/
 **.vscode/
 **.Font/
-**.logs/
+**logs/
 
 *.mp3
 *.jpg
@@ -10,4 +10,3 @@
 *.png
 *.svg
 *.pyc
-

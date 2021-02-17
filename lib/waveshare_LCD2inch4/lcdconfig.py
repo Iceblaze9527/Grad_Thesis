@@ -35,8 +35,8 @@ import logging
 import numpy as np
 
 class RaspberryPi:
-    def __init__(self,spi=spidev.SpiDev(0,0), rst = 27, dc = 25,bl = 18, spi_freq=40000000, bl_freq=1000, i2c=None, i2c_freq=100000):
-        import RPi.GPIO
+    def __init__(self,spi=spidev.SpiDev(0,0),spi_freq=40000000,rst = 27,dc = 25,bl = 18,bl_freq=1000,i2c=None,i2c_freq=100000):
+        import RPi.GPIO      
         self.np=np
         self.RST_PIN= rst
         self.DC_PIN = dc
@@ -47,10 +47,10 @@ class RaspberryPi:
         #self.GPIO.cleanup()
         self.GPIO.setmode(self.GPIO.BCM)
         self.GPIO.setwarnings(False)
-        self.GPIO.setup(self.RST_PIN,   self.GPIO.OUT)
-        self.GPIO.setup(self.DC_PIN,    self.GPIO.OUT)
-        self.GPIO.setup(self.BL_PIN,    self.GPIO.OUT)
-        self.GPIO.output(self.BL_PIN,   self.GPIO.HIGH)
+        self.GPIO.setup(self.RST_PIN, self.GPIO.OUT)
+        self.GPIO.setup(self.DC_PIN, self.GPIO.OUT)
+        self.GPIO.setup(self.BL_PIN, self.GPIO.OUT)
+        self.GPIO.output(self.BL_PIN, self.GPIO.HIGH)        
         #Initialize SPI
         self.SPI = spi
         if self.SPI!=None :
@@ -71,33 +71,34 @@ class RaspberryPi:
             self.SPI.writebytes(data)
     def bl_DutyCycle(self, duty):
         self._pwm.ChangeDutyCycle(duty)
-
+        
     def bl_Frequency(self,freq):
         self._pwm.ChangeFrequency(freq)
-
+           
     def module_init(self):
         self.GPIO.setup(self.RST_PIN, self.GPIO.OUT)
         self.GPIO.setup(self.DC_PIN, self.GPIO.OUT)
         self.GPIO.setup(self.BL_PIN, self.GPIO.OUT)
         self._pwm=self.GPIO.PWM(self.BL_PIN,self.BL_freq)
-        self._pwm.start(0)
+        self._pwm.start(100)
         if self.SPI!=None :
-            self.SPI.max_speed_hz = self.SPEED
-            self.SPI.mode = 0b00
+            self.SPI.max_speed_hz = self.SPEED        
+            self.SPI.mode = 0b00     
         return 0
 
     def module_exit(self):
         logging.debug("spi end")
         if self.SPI!=None :
             self.SPI.close()
-
+        
         logging.debug("gpio cleanup...")
         self.GPIO.output(self.RST_PIN, 1)
-        self.GPIO.output(self.DC_PIN, 0)
+        self.GPIO.output(self.DC_PIN, 0)        
         self._pwm.stop()
         time.sleep(0.001)
-        self.GPIO.output(self.BL_PIN, 0)
+        self.GPIO.output(self.BL_PIN, 0)##关掉背光（结束时是黑色）
         #self.GPIO.cleanup()
+
 
 '''
 if os.path.exists('/sys/bus/platform/drivers/gpiomem-bcm2835'):
