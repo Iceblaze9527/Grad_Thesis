@@ -1,9 +1,0 @@
-*.mp3
-*.jpg
-*.bmp
-*.png
-*.svg
-*.ipynb_checkpoints/
-**/Font
-*.pyc
-**.vscode/
