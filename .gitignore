@@ -1,9 +1,13 @@
+**.__pycache__
+**.ipynb_checkpoints
+**.vscode
+**.Font
+**.log
+
 *.mp3
 *.jpg
 *.bmp
 *.png
 *.svg
-*.ipynb_checkpoints/
-**/Font
 *.pyc
-**.vscode/
+
