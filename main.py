@@ -6,15 +6,15 @@ from env import IntEnv
 from agent import Agent
 from logger import CustomLogger
 
+## TODO: 
+## 1. dissect the file into diff modules
+
 ## helper funcs
 def get_ext_state_space(ext_state_vars):
     add_prefix = list(map(lambda var: [''.join(('DSB_',var)), ''.join(('ENV_',var))], ext_state_vars))
     state_product = list(product(add_prefix[1], add_prefix[0]))## for more external states
     ext_state_spaces = list(map(lambda item: ' & '.join((item[0], item[1])), state_product))## for more external states
     return ext_state_spaces
-
-## Main Params
-INPUT_PROMPT = "Input external states, 1 for 'ENABLED', 0 for 'DISABLED'."
 
 ## Agent Params
 ext_state_vars = ['FOOD', 'TAIL']
@@ -27,6 +27,26 @@ FAIL = 7
 alpha = 0.5 # in [0,1], low if former knowledge is valued more, else new knowledge
 gamma = 0.9 # in (0,1), can neither be too low (not convergent) nor too high (for small state space)
 epsilon = 0.1 # can decline over time. Soft action selection policies include epsilon-greedy, epsilon-soft and softmax
+
+## control system
+def get_ext_states(prompt):
+    ext_states_str = input(prompt)
+    
+    ext_states_lst = list(ext_states_str)
+    if not all([state in set(['0','1']) for state in ext_states_lst]):
+        raise SyntaxError("Incorrect input format. Only 0s and 1s are allowed. Your input is '%s'. "%(ext_states_str))
+    if not len(ext_states_lst) == len(ext_state_space):
+        raise ValueError('Mismatched number of external states. External state num %d, input state num %d.'%(len(ext_state_space), len(ext_states_lst)))
+    
+    ext_states_lst = list(map(int, ext_states_lst))
+    ext_states = sum([state << index for index, state in enumerate(ext_states_lst)])
+    
+    return ext_states
+
+def send_action_cmd(action):
+    assert (action in [SUCCESS, FAIL])|(action in action_space), "Illegal action flag."
+
+
 
 ## IntEnv Params
 ## HomeoSys Params
@@ -45,26 +65,12 @@ WB_MAX = 100
 WB_MIN = 0
 ## weight params
 
-## control system
-def get_ext_states(prompt):
-    ext_states_str = input(prompt)
-    
-    ext_states_lst = list(ext_states_str)
-    if not all([state in set(['0','1']) for state in ext_states_lst]):
-        raise SyntaxError("Incorrect input format. Only 0s and 1s are allowed. Your input is '%s'. "%(ext_states_str))
-    if not len(ext_states_lst) == len(ext_state_space):
-        raise ValueError('Mismatched number of external states. External state num %d, input state num %d.'%(len(ext_state_space), len(ext_states_lst)))
-    
-    ext_states_lst = list(map(int, ext_states_lst))
-    ext_states = sum([state << index for index, state in enumerate(ext_states_lst)])## compute flag index
-    
-    return ext_states
-
-def send_action_cmd(action):
-    assert (action in [SUCCESS, FAIL])|(action in action_space), "Illegal action flag."
+## Main Params
+INPUT_PROMPT = "Input external states, 1 for 'ENABLED', 0 for 'DISABLED'."
 
 if __name__=='__main__':
-    state = lambda int_state, ext_states: int_state << len(ext_state_vars) + ext_states
+    state = lambda int_state, ext_states: int_state << len(ext_state_vars) + ext_states ## state encoding
+    
     ## Init Environment and Agent
     # TODO: 
     # 1. proper input param lists
@@ -85,9 +91,9 @@ if __name__=='__main__':
     cnt = 0
     t0 = time.perf_counter()
 
-    ext_states_old = get_ext_states(INPUT_PROMPT)# return flag
+    ext_states_old = get_ext_states(INPUT_PROMPT)
     int_state_old, well_being = int_env.update(ext_states_old, cnt)# return flag (index)
-    action_old = agent.take_action(state(int_state_old, ext_states_old))# return flag (index)
+    action_old = agent.take_action(state(int_state_old, ext_states_old))
     wb_prev = well_being
 
     log.step_log(
@@ -97,13 +103,13 @@ if __name__=='__main__':
         wb=well_being, 
         reward=None, 
         action=action_old, 
-        t_st = t0)
+        t_st=t0)
 
     while True:
         cnt += 1
         t_start = time.perf_counter()
 
-        ext_states_new = get_ext_states(INPUT_PROMPT)# return flag
+        ext_states_new = get_ext_states(INPUT_PROMPT)
         int_state_new, well_being = int_env.update(ext_states_new, cnt)# return flag (index)
         
         if well_being == WB_MAX:## Halt
@@ -135,7 +141,7 @@ if __name__=='__main__':
             else:
                 reward = well_being - wb_prev
                 wb_prev = well_being
-                action_new = agent.take_action(state(int_state_new, ext_states_new))# return flag (index)
+                action_new = agent.take_action(state(int_state_new, ext_states_new))
                 send_action_cmd(action_new)
                 
                 agent.learn(
