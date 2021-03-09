@@ -1,7 +1,6 @@
-import logging
 import time
 
-NON_REW = 999
+from logger import CustomLogger
 
 SUCCESS = 0
 FAIL = 1
@@ -19,38 +18,44 @@ action_space = {
     'FEA_LOOK':FEA_LOOK, 
     'ANG_LOOK':ANG_LOOK}
 
-if __name__ == '__main__':  
-    ## write_init_log
+if __name__ == '__main__':
+    log = CustomLogger('test.log')
 
-    ext_states, int_state, well_being, reward, action = 'FOOD & NO_TAIL', 'HAPPY', 50, NON_REW, 'HAP_LOOK'
+    cnt = 0
+    t0 = time.perf_counter()
+    
+    log.init_log()
+
+    ext_states, int_state, well_being, reward, action = 'FOOD & NO_TAIL', 'HAPPY', 50, None, 'HAP_LOOK'
     wb_prev = well_being
     
-    ## write_step_log
+    log.step_log(cnt=cnt, s_ext=ext_states, s_int=int_state, wb=well_being, reward=reward, action=action, t_st = t0)
 
     while True:
+        cnt += 1
         t_start = time.perf_counter()
         
         ext_states, int_state, well_being = 'FOOD & TAIL', 'SAD', well_being - 10
         
         if well_being == 100:
-            reward = NON_REW
+            reward = None
             action = 'SUCCESS'
-            ## write_step_log
+            log.step_log(cnt=cnt, s_ext=ext_states, s_int=int_state, wb=well_being, reward=reward, action=action, t_st=t_start)
             break
         else:
             if well_being == 0:
-                reward = NON_REW
+                reward = None
                 action = 'FAIL'
-                ## write_step_log
+                log.step_log(cnt=cnt, s_ext=ext_states, s_int=int_state, wb=well_being, reward=reward, action=action, t_st=t_start)
                 break
             else:
                 reward = well_being - wb_prev
-                wb_prev = well_being
                 action = 'HAP_LOOK'
                 time.sleep(1)
-                ## write_step_log
+                log.step_log(cnt=cnt, s_ext=ext_states, s_int=int_state, wb=well_being, reward=reward, action=action, t_st=t_start)
+                wb_prev = well_being
 
-    ## write_term_log
+    log.term_log(t0)
 
 # import os
 

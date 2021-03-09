@@ -8,16 +8,10 @@ class CustomLogger():
             filename=logfile,
             filemode='w',
             format='%(message)s')
-        self.cnt = 0
-        self.t0 = time.perf_counter()
-    
-    def write_init_log(self):
         logging.info('Start of interaction.')
     
-    def write_step_log(self, ext_states, int_state, well_being, reward, action, t_start):## TODO: property & decorator
-        logging.info('Step %5d: S_ext = %-20s, S_int = %-7s, Wb = %6.2f, Reward = %6.2f, Action = %-8s, Elapsed_Time = %6.3f'
-            %(self.cnt, ext_states, int_state, well_being, reward, action, time.perf_counter() - t_start))
-        self.cnt += 1
+    def step_log(self, cnt, s_ext, s_int, wb, reward, action, t_st):
+        logging.info('Step %5d: S_ext = %-20s, S_int = %-7s, Wb = %6.2f, Reward = %s, Action = %-8s, Elapsed_Time = %6.3f'%(cnt, s_ext, s_int, wb, str(reward).ljust(7,' '), action, time.perf_counter() - t_st))
     
-    def write_term_log(self):
-        logging.info('End of interaction. Total Time: %8.3f'%(time.perf_counter() - self.t0))
+    def term_log(self, t0):
+        logging.info('End of interaction.\n Total Time: %8.3f'%(time.perf_counter() - t0))
