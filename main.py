@@ -3,12 +3,12 @@ import time
 import control as ctrl
 
 from env import IntEnv
-from agent import Agent, cnt
+from agent import Agent
 from logger import CustomLogger
 
 ## IntEnv Params
 ## HomeoSys Params
-homeo_vars = ['ENERGY', 'COMFORT']#optimal values
+##homeo_vars = ['ENERGY', 'COMFORT']#optimal values
 ## ext_stimuli params
 ## increasing func params
 ## satisfaction time params
@@ -16,7 +16,7 @@ homeo_vars = ['ENERGY', 'COMFORT']#optimal values
 ## activation level params
 
 ## EmoSys Params
-emo_motiv_mat = []##
+##emo_motiv_mat = []
 
 ## WbSys Params
 WB_MAX = 100
@@ -27,14 +27,11 @@ WB_MIN = 0
 INPUT_PROMPT = "Input external states, 1 for 'ENABLED', 0 for 'DISABLED'."##
 
 if __name__=='__main__':
-    ## Init Environment and Agent
     agent = Agent()
-    int_env = IntEnv(
-        homeo_vars = homeo_vars)
-    
+    int_env = IntEnv()
     log = CustomLogger()
     
-    t0 = time.perf_counter()
+    t0 = time.process_time()
 
     ext_states_old = ctrl.get_ext_states(INPUT_PROMPT)
     int_state_old, well_being = int_env.update(ext_states_old, agent.cnt)# return flag (index)
@@ -50,7 +47,7 @@ if __name__=='__main__':
 
     while True:
         agent.cnt += 1
-        t_start = time.perf_counter()
+        t_start = time.process_time()
 
         ext_states_new = ctrl.get_ext_states(INPUT_PROMPT)
         int_state_new, well_being = int_env.update(ext_states_new, agent.cnt)# return flag (index)

@@ -1,14 +1,14 @@
 from itertools import product
 
 ## 1. Agent Params
-def get_ext_state_space(ext_state_vars):
+def __get_ext_state_space(ext_state_vars):
     add_prefix = list(map(lambda var: [''.join(('DSB_',var)), ''.join(('ENV_',var))], ext_state_vars))
     state_product = list(product(add_prefix[1], add_prefix[0]))##TODO: for more external states
     ext_state_space = list(map(lambda item: ' & '.join((item[0], item[1])), state_product))
     return ext_state_space
 
 ext_state_vars = ['FOOD', 'TAIL']
-ext_state_space = get_ext_state_space(ext_state_vars)# index == flag
+ext_state_space = __get_ext_state_space(ext_state_vars)# index == flag
 int_state_space = ['HAPPY', 'SAD', 'FEARFUL', 'ANGRY']# index == flag
 action_space = ['HAP_LOOK', 'SAD_LOOK', 'FEA_LOOK', 'ANG_LOOK']# index == flag
 
