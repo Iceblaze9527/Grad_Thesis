@@ -3,8 +3,8 @@ import numpy as np
 from param import ext_state_vars, ext_state_space, int_state_space, action_space, alpha, gamma, epsilon, q_tab_log_name
 
 ## TODO:
-## 3. param bounds and time variants
-## 4. Diff Algos: Inheritance and Polymorphism
+## 1. param bounds and time variants
+## 2. Different Algos: Inheritance and Polymorphism
 
 class Agent():# Expected SARSA (On-policy implementation)
     def __init__(self):
