@@ -1,14 +1,15 @@
 import numpy as np
-import random
 
-from param import ext_state_vars, ext_state_space, int_state_space, action_space, alpha, gamma, epsilon
+from param import ext_state_vars, ext_state_space, int_state_space, action_space, alpha, gamma, epsilon, q_tab_log_name
 
 ## TODO:
-## 1. q table monitoring
 ## 2. private and static methods
 
 ## 3. param bounds and time variants
 ## 4. Diff Algos: Inheritance and Polymorphism
+
+save_q_tab = lambda f, q, c: np.savetxt(
+    fname=f, X=q, fmt='%.3f', delimiter=',', newline='\n', header='Step %5d'%(c))
 
 class Agent():# Expected SARSA (On-policy implementation)
     def __init__(self):
@@ -19,7 +20,11 @@ class Agent():# Expected SARSA (On-policy implementation)
         self.alpha = alpha
         self.gamma = gamma
         self.epsilon = epsilon
-    
+        
+        self.cnt = 0
+        self.file = open(q_tab_log_name, 'a')
+        save_q_tab(self.file, self.q_table, self.cnt)
+
     def get_state(self, int_state, ext_states):
         return int_state << len(ext_state_vars) + ext_states
 
@@ -50,3 +55,4 @@ class Agent():# Expected SARSA (On-policy implementation)
 
         delta = self.alpha * (reward + self.gamma * state_new_expct - self.q_table[state_old, action_old])
         self.q_table[state_old, action_old] += delta
+        save_q_tab(self.file, self.q_table, self.cnt)

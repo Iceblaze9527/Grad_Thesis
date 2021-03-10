@@ -3,7 +3,7 @@ import time
 import control as ctrl
 
 from env import IntEnv
-from agent import Agent
+from agent import Agent, cnt
 from logger import CustomLogger
 
 ## IntEnv Params
@@ -34,33 +34,31 @@ if __name__=='__main__':
     
     log = CustomLogger()
     
-    ## Start Training
-    cnt = 0
     t0 = time.perf_counter()
 
     ext_states_old = ctrl.get_ext_states(INPUT_PROMPT)
-    int_state_old, well_being = int_env.update(ext_states_old, cnt)# return flag (index)
+    int_state_old, well_being = int_env.update(ext_states_old, agent.cnt)# return flag (index)
     action_old = agent.take_action(int_state_old, ext_states_old)
     wb_prev = well_being
 
     log.step_log(
-        cnt=cnt, 
+        cnt=agent.cnt, 
         s_ext=ext_states_old, s_int=int_state_old,
         wb=well_being, reward=None, 
         action=action_old, 
         t_st=t0)
 
     while True:
-        cnt += 1
+        agent.cnt += 1
         t_start = time.perf_counter()
 
         ext_states_new = ctrl.get_ext_states(INPUT_PROMPT)
-        int_state_new, well_being = int_env.update(ext_states_new, cnt)# return flag (index)
+        int_state_new, well_being = int_env.update(ext_states_new, agent.cnt)# return flag (index)
         
         if well_being == WB_MAX:## Halt
             ctrl.send_action_cmd('SUCCESS')
             log.step_log(
-                cnt=cnt, 
+                cnt=agent.cnt, 
                 s_ext=ext_states_new, s_int=int_state_new,
                 wb=well_being, reward=None, 
                 action='SUCCESS', 
@@ -70,7 +68,7 @@ if __name__=='__main__':
             if well_being == WB_MIN:## Halt
                 ctrl.send_action_cmd('FAIL')
                 log.step_log(
-                    cnt=cnt, 
+                    cnt=agent.cnt, 
                     s_ext=ext_states_new, s_int=int_state_new,
                     wb=well_being, reward=None, 
                     action='FAIL', 
@@ -88,7 +86,7 @@ if __name__=='__main__':
                     action_old, reward)
                 
                 log.step_log(
-                    cnt=cnt, 
+                    cnt=agent.cnt, 
                     s_ext=ext_states_new, s_int=int_state_new,
                     wb=well_being, reward=reward, 
                     action=action_new, 
@@ -97,7 +95,7 @@ if __name__=='__main__':
                 ext_states_old = ext_states_new
                 int_state_old = int_state_new
                 action_old = action_new
-    ## Terminate Training
+
     log.term_log(t0)
 
 # END_OF_FILE
