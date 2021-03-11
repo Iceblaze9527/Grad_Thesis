@@ -24,18 +24,6 @@ epsilon = 0.1 # can decline over time. Soft action selection policies include ep
 q_tab_log_name = __add_timestamp('q_tab.txt')
 
 ## 2. IntEnv Params
-## HomeoSys Params
-##homeo_vars = ['ENERGY', 'COMFORT']#optimal values
-## ext_stimuli params
-## increasing func params
-## satisfaction time params
-## satuation level params
-## activation level params
-
-## EmoSys Params
-##emo_motiv_mat = []
-
-## WbSys Params
 WB_MAX = 100
 WB_MIN = 0
 ## weight params
@@ -45,3 +33,5 @@ WB_MIN = 0
 log_name = __add_timestamp('test.log')
 
 ## 4. control params
+
+## 5. TODO: param assertion
