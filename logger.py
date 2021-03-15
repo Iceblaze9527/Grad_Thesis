@@ -1,13 +1,13 @@
 import time
 import logging
 
-from param import ext_state_space, int_state_space, action_space, log_name
+from param import ext_state_space, int_state_space, action_space, main_log_name
 
 class Logger():
     def __init__(self):
         logging.basicConfig(
             level=logging.INFO,
-            filename=log_name,
+            filename=main_log_name,
             filemode='w',
             format='%(message)s')
         logging.info('Start of interaction.')

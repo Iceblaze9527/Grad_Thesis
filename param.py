@@ -20,17 +20,16 @@ alpha = 0.5 # in [0,1], low if previous knowledge is valued more, else new knowl
 gamma = 0.9 # in (0,1), can neither be too low (not convergent) nor too high (for small state space)
 epsilon = 0.1 # can decline over time. Soft action selection policies include epsilon-greedy, epsilon-soft and softmax, etc..
 
-## TODO: time-related file names
-q_tab_log_name = __add_timestamp('q_tab.txt')
-
 ## 2. IntEnv Params
 WB_MAX = 100
 WB_MIN = 0
-## weight params
 
 ## 3. Logger Params
 ## TODO: time-related file names
-log_name = __add_timestamp('test.log')
+main_log_name = __add_timestamp('test.log')
+q_tab_log_name = __add_timestamp('q_tab.txt')
+ENV_LOG_NAME= __add_timestamp('env.txt')
+
 
 ## 4. control params
 
