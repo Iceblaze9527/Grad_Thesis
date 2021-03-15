@@ -12,16 +12,13 @@ class Agent():# Expected SARSA (On-policy implementation)
     
     def __init__(self):
         self._q_table = np.random.rand(_state_space, _action_space)
-        self._file = open(q_tab_log_name, 'a')
-        self._save_q_tab(self._file, self._q_table, 0)
-    
-    @staticmethod
-    def _save_q_tab(file, q_tab, cnt):
-        np.savetxt(fname=file, X=q_tab, fmt='%.3f', delimiter=',', newline='\n', header='Step %5d'%(cnt))
-    
-    @staticmethod
-    def _get_state(int_state, ext_states):
-        return (int_state << len(ext_state_vars)) + ext_states
+        self.file = open(q_tab_log_name, 'a')
+
+        self._get_state = lambda int_state, ext_states: (int_state << len(ext_state_vars)) + ext_states
+        self._save_q_tab = lambda cnt: np.savetxt(fname=self.file, X=self._q_table, 
+            fmt='%.3f', delimiter=',', newline='\n', header='Step %5d'%(cnt))
+        
+        self._save_q_tab(0)
 
     def _greedy_action_selection(self, state):
         q_max = (np.argmax(self._q_table[state, :])).reshape(-1)
@@ -51,4 +48,4 @@ class Agent():# Expected SARSA (On-policy implementation)
         delta = alpha * (reward + gamma * state_new_expct - self._q_table[state_old, action_old])
         self._q_table[state_old, action_old] += delta
         
-        self._save_q_tab(self._file, self._q_table, cnt)
+        self._save_q_tab(cnt)

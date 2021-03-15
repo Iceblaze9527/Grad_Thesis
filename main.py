@@ -81,5 +81,7 @@ if __name__=='__main__':
                 action_old = action_new
 
     log.term_log(t0)
+    (agent.file).close()
+    (int_env.file).close()
 
 # END_OF_FILE

@@ -30,7 +30,6 @@ main_log_name = __add_timestamp('test.log')
 q_tab_log_name = __add_timestamp('q_tab.txt')
 ENV_LOG_NAME= __add_timestamp('env.txt')
 
-
 ## 4. control params
 
 ## 5. TODO: param assertion

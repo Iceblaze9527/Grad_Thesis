@@ -1,68 +1,62 @@
 import numpy as np
 
-from param import ENV_LOG_NAME, WB_MAX, WB_MIN
+from param import ext_state_vars, ENV_LOG_NAME, WB_MAX, WB_MIN
 
-# num_ext_states = np.floor(np.log2(self.ext_states)).astype(np.int) + 1
-
-linear_decay = lambda delta: delta
+linear_decay = lambda hv_old: 2
 
 class IntEnv():
-    homeo_vars = ['ENERGY', 'COMFORT']
-    hv_maxs = np.array([100,100])
-    hv_mins = np.array([0,0])
+    _homeo_vars = ['ENERGY', 'COMFORT']
+    _hv_maxs = np.array([100,100])
+    _hv_mins = np.array([0,0])
     
-    coef_hv_ext = np.array([[6,0],[0,-6]])## num_of_hv * num_of_s_ext
-    decay_funcs = [linear_decay, linear_decay]## a func list, decay_func_of_hv_vars
+    _coef_hv_ext_st = np.array([[6,0],[0,-6]])## num_of_hv * num_of_s_ext
+    _step_decays = [linear_decay, linear_decay]## a func list, return hv_func[cnt] - hv_func[cnt - 1] based on hv_func[cnt - 1]
 
-    act_levels = np.array([5,5])
+    _act_levels = np.array([5,5])
     
-    coef_emo_motiv = np.array([[-0.2,0.3], [0.7,0], [-0.2,0.7], [0.2,0.1]])
-    motiv_weights = np.array([0,0])##
+    _coef_emo_motiv = np.array([[-0.2,0.3], [0.7,0], [-0.2,0.7], [0.2,0.1]])
+    _motiv_weights = np.array([0,0])## TODO
 
     wb_max = WB_MAX
     wb_min = WB_MIN
     
     def __init__(self):
-        self._hvs = np.random.binomial(n=hv_maxs-hv_mins, p=0.5)## random start, close to the middle
-        self._file = open(ENV_LOG_NAME, 'a')
-        self._decay_funcs = decay_funcs
-    
-    @staticmethod
-    def _save_vars(file, var, cnt, var_type):
-        np.savetxt(fname=file, X=var, fmt='%.3f', delimiter=',', newline='\n', 
-            header='Step %5d'%(cnt), footer=var_type)
+        self._hvs = np.random.binomial(n = _hv_maxs - _hv_mins, p = 0.5) + _hv_mins ## random start, close to the middle point
+        self.file = open(ENV_LOG_NAME, 'a')
+        
+        self._save_vars = lambda var, cnt, var_type: np.savetxt(fname=self.file, X=var, fmt='%.3f', 
+            delimiter=',', newline='\n', header='Step %5d'%(cnt), footer=var_type)
+        
+        print('Homeostatic Variables:', _homeo_vars, file=self.file)
 
-    def _homeo_vars(self):
-        for ext_state in range(2):## num_ext_states
-            if self.ext_states >> ext_state == 1:## if ext_stimuli enabled
-                self._hvs[ext_state] += coef_hv_ext[:, ext_state].reshape(-1)
-            else:## hv_vars!= ext_state, cnt != time_step
-                self._hvs[ext_state] -= (self._decay_funcs[ext_state])(self.cnt, self._hvs[ext_state])
-        self._hvs = np.clip(self._hvs, hv_mins, hv_maxs)
+    def _update_homeo_vars(self, ext_states):
+        hv_news = self._hvs
+        for ext_state in range(len(ext_state_vars)):
+            if ext_states >> ext_state == 1:
+                hv_news[ext_state] += _coef_hv_ext_st[:, ext_state].reshape(-1)
         
-        self._save_vars(self._file, self._hvs, self.cnt, 'Homeostatic Values')
-        
-        return self._hvs
+        dec_vals = [decay(hv_old) for decay, hv_old in zip(_step_decays, self._hvs)]
+        hv_news = np.where(hv_news - self._hvs, hv_news, self._hvs - dec_vals)
+        hv_news = np.clip(hv_news, _hv_mins, _hv_maxs)
+        self._hvs = hv_news
     
-    def _drives(self):
-        return hv_maxs - self._homeo_vars()# saturation level
-    
-    def _motivations(self):
-        drives = self._drives()
-        motivs = np.where(drives < act_levels, 0, drives)
-        
-        self._save_vars(self._file, motivs, self.cnt, 'Motivation Values')
-        
+    def _motivations(self, ext_states):
+        self._update_homeo_vars(ext_states)
+        drives = _hv_maxs - self._hvs
+        motivs = np.where(drives < _act_levels, 0, drives)
+
         return motivs
-    
-    def step(self, ext_states, cnt):
-        self.cnt = cnt
-        self.ext_states = ext_states
-        
-        motivs = self._motivations()
 
-        int_state = np.argmax(np.dot(coef_emo_motiv, motivs)).reshape(-1)
-        int_state = np.random.choice(int_state)## TODO: if more than one emotions are dominant
-        wb = wb_max - np.sum(motiv_weights * motivs)
+    def step(self, ext_states, cnt):
+        motivs = self._motivations(ext_states)
+
+        int_state = np.argmax(np.dot(_coef_emo_motiv, motivs)).reshape(-1)
+        ## TODO: if more than one emotions are dominant
+        int_state = np.random.choice(int_state)
+        wb = wb_max - np.sum(_motiv_weights * motivs)
+        wb = max([wb, wb_min])
+
+        self._save_vars(self._hvs, cnt, 'Homeostatic Values')
+        self._save_vars(motivs, cnt, 'Motivation Values')
         
-        return int_state, max([wb, wb_min])
+        return int_state, wb
