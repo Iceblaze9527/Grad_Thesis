@@ -11,6 +11,8 @@ def __get_ext_state_space(ext_state_vars):
 def __add_timestamp(filename):
     return filename
 
+RAND_SEED = 15
+
 ext_state_vars = ['FOOD', 'TAIL']
 ext_state_space = __get_ext_state_space(ext_state_vars)
 int_state_space = ['HAPPY', 'SAD', 'FEARFUL', 'ANGRY']
