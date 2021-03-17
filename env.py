@@ -20,7 +20,7 @@ class IntEnv():
     def _update_homeo_vars(self, ext_states):
         hv_news = self._hvs
         for ext_state, gain in enumerate(INTENV_PAR['coef_hv_ext_st'].T):
-            if ext_states >> ext_state == 1:
+            if (ext_states >> ext_state) % 2 == 1:
                 hv_news += gain.reshape(-1)
         
         dec_vals = [decay(hv_old) for decay, hv_old in zip(INTENV_PAR['step_decays'], self._hvs)]

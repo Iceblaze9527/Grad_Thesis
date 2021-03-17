@@ -12,7 +12,7 @@ def __get_ext_state_space(ext_state_vars):
     return ext_state_space
 
 def __get_filename(filename, parent_path):
-    timestamp = time.strftime("%y%m%d_%H:%M:%S", time.localtime()) 
+    timestamp = time.strftime("%y%m%d_%H.%M.%S", time.localtime()) 
     dir_path = os.path.join(parent_path, timestamp)
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
@@ -80,4 +80,4 @@ MAIN_LOG = __get_filename('train.log', LOG_PATH)
 AGENT_LOG = __get_filename('agent.txt', LOG_PATH)
 INTENV_LOG = __get_filename('int_env.txt', LOG_PATH)
 
-RAND_SEED = 15
+RAND_SEED = 17
