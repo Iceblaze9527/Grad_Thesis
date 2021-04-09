@@ -1,5 +1,5 @@
 import time
-import random
+
 from rpi_ws281x import Adafruit_NeoPixel, Color
 
 LED_COUNT      = 25      # Number of LED pixels.
@@ -9,15 +9,41 @@ LED_COL        = 5       # Column of LED pixels
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
-LED_BRIGHTNESS = 10    # Set to 0 for darkest and 255 for brightest
+LED_BRIGHTNESS = 15    # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 
 PERIOD = 3 #seconds
 
+def happy_eyes(strip_inst, steps, blink, diff):
+	rounds = steps // blink
+	half = rounds // 2
+	
+	red_func = lambda intensity, col: int(intensity * diff if (col in [0,LED_COL-1]) else 0)
+	green_func = lambda intensity, col: int(0xff - intensity * diff)
+	blue_func = lambda intensity, col: int(intensity * 0x00)
+
+	interval = PERIOD / steps
+	
+	for step in range(steps):
+		ratio = ((step % rounds) / half) if ((step % rounds) < half + 1) else ((rounds - (step % rounds)) / half)
+		
+		for j in range(LED_COL):
+			_red = red_func(ratio, j)
+			_green = green_func(ratio, j)
+			_blue = blue_func(ratio, j)
+
+			_rgb = int((_red << 16) | (_green << 8) | _blue)
+			
+			for i in range(LED_ROW):
+				strip_inst.setPixelColor(j+5*i, _rgb)
+		
+		strip_inst.show()
+		time.sleep(interval)
+
 def sad_eyes(strip_inst, steps):
 	red_func = lambda step: 0x00
 	green_func = lambda step: 0x00
-	blue_func = lambda step: int(0xff - step)
+	blue_func = lambda step: int(0xff - 1.5 * step)
 	
 	num = strip_inst.numPixels()
 	interval = PERIOD / steps
@@ -43,17 +69,14 @@ def fear_eyes(strip_inst, steps, diff, width):
 	green_func = lambda step, jitt: 0xff - jitt
 	blue_func = lambda step, jitt: 0x00
 
-	n = 4 * width
 	low_lst = range(2 * width)
 	interval = PERIOD / steps
 	
 	for step in range(steps):
-		if (step % n) < (2 * width):
-			low_lst = [(row - 1) for row in low_lst]
-			low_lst = [(LED_ROW - 1) if row == -1 else row for row in low_lst]
+		if (step % (4 * width)) < (2 * width):
+			low_lst = [(LED_ROW - 1) if row == 0 else row - 1 for row in low_lst]
 		else:
-			low_lst = [(row + 1) for row in low_lst]
-			low_lst = [0 if row == LED_ROW else row for row in low_lst]
+			low_lst = [0 if row == (LED_ROW - 1) else row + 1 for row in low_lst]
 
 		for i in range(LED_ROW):
 			_red = red_func(step, jitt(i, low_lst))
@@ -68,62 +91,38 @@ def fear_eyes(strip_inst, steps, diff, width):
 		strip_inst.show()
 		time.sleep(interval)
 
-strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
+def angry_eyes(strip_inst, steps, diff):
+	red_func = lambda step, differ: int(0xff - differ)#
+	green_func = lambda step, differ: 0x00
+	blue_func = lambda step, differ: 0x00
+	
+	num = strip_inst.numPixels()
+	interval = PERIOD / steps
+	
+	for step in range(steps):
+		differ = diff if (step % 2) == 1 else 0
+		_red = red_func(step, differ)
+		_green = green_func(step, differ)
+		_blue = blue_func(step, differ)
+		
+		_rgb = int((_red << 16) | (_green << 8) | _blue)
+		
+		for i in range(num):
+			strip_inst.setPixelColor(i, _rgb)
+		
+		strip_inst.show()
+		time.sleep(interval)
 
-try:
-	strip.begin()
-	# sad_eyes(strip, 223)
-	fear_eyes(strip, 80, 192, 1)
-	strip._cleanup()
-except KeyboardInterrupt:
-	strip._cleanup()
-	exit()
+if __name__ == '__main__':
+	strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
 	
-	
-	# #Reverse order	
-
-	# #Turn around
-	# for i in range(0,strip.numPixels()//4):
-	# 	strip.setPixelColor(i, Color(255,0,0))
-	# 	strip.show()
-	# 	time.sleep(0.05)
-	# for i in range(0,strip.numPixels()//8-1):
-	# 	strip.setPixelColor(7+8*i, Color(255,0,0))	
-	# 	strip.show()
-	# 	time.sleep(0.05)
-	# for i in range(0,strip.numPixels()//4+1):
-	# 	strip.setPixelColor(strip.numPixels()-i, Color(255,0,0))
-	# 	strip.show()
-	# 	time.sleep(0.05)
-	# for i in range(0,strip.numPixels()//8-1):
-	# 	strip.setPixelColor(16-8*i, Color(255,0,0))	
-	# 	strip.show()
-	# 	time.sleep(0.05)	
-	# for i in range(0,strip.numPixels()//4-1):
-	# 	strip.setPixelColor(i+8, Color(255,0,0))	
-	# 	strip.show()
-	# 	time.sleep(0.05)		
-	# for i in range(0,strip.numPixels()//4-1):
-	# 	strip.setPixelColor(strip.numPixels()-9-i, Color(255,0,0))	
-	# 	strip.show()
-	# 	time.sleep(0.05)	
-	
-	# #Middle to both sides, both sides to the middle
-	# for i in range(0,strip.numPixels()//4-1):
-	# 	for y in range(0,strip.numPixels()//8):
-	# 		strip.setPixelColor(4+y*8+i, Color(0,255,255))
-	# 		strip.setPixelColor(3+y*8-i, Color(0,255,255))
-	# 	strip.show()
-	# 	time.sleep(0.1)
-	# for i in range(0,strip.numPixels()//4-1):
-	# 	for y in range(0,strip.numPixels()//8):
-	# 		strip.setPixelColor(7+y*8-i, Color(255,255,0))
-	# 		strip.setPixelColor(y*8+i, Color(255,255,0))
-	# 	strip.show()
-	# 	time.sleep(0.1)
-	# #random color
-	# for x in range(0,5):
-	# 	for i in range(0,strip.numPixels()):
-	# 		strip.setPixelColor(i, Color(random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)))	
-	# 		strip.show()
-	# 	time.sleep(0.5)
+	try:
+		strip.begin()
+		happy_eyes(strip, 50, 2, 192)
+		sad_eyes(strip, 128)
+		fear_eyes(strip, 25, 192, 1)
+		angry_eyes(strip, 25, 192)
+		strip._cleanup()
+	except KeyboardInterrupt:
+		strip._cleanup()
+		exit()
