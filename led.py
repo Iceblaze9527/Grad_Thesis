@@ -30,40 +30,40 @@ while 1:
 		strip.show()
 		time.sleep(0.05)
 	#Turn around
-	for i in range(0,strip.numPixels()/4):
+	for i in range(0,strip.numPixels()//4):
 		strip.setPixelColor(i, Color(255,0,0))
 		strip.show()
 		time.sleep(0.05)
-	for i in range(0,strip.numPixels()/8-1):
+	for i in range(0,strip.numPixels()//8-1):
 		strip.setPixelColor(7+8*i, Color(255,0,0))	
 		strip.show()
 		time.sleep(0.05)
-	for i in range(0,strip.numPixels()/4+1):
+	for i in range(0,strip.numPixels()//4+1):
 		strip.setPixelColor(strip.numPixels()-i, Color(255,0,0))
 		strip.show()
 		time.sleep(0.05)
-	for i in range(0,strip.numPixels()/8-1):
+	for i in range(0,strip.numPixels()//8-1):
 		strip.setPixelColor(16-8*i, Color(255,0,0))	
 		strip.show()
 		time.sleep(0.05)	
-	for i in range(0,strip.numPixels()/4-1):
+	for i in range(0,strip.numPixels()//4-1):
 		strip.setPixelColor(i+8, Color(255,0,0))	
 		strip.show()
 		time.sleep(0.05)		
-	for i in range(0,strip.numPixels()/4-1):
+	for i in range(0,strip.numPixels()//4-1):
 		strip.setPixelColor(strip.numPixels()-9-i, Color(255,0,0))	
 		strip.show()
 		time.sleep(0.05)	
 	
 	#Middle to both sides, both sides to the middle
-	for i in range(0,strip.numPixels()/4-1):
-		for y in range(0,strip.numPixels()/8):
+	for i in range(0,strip.numPixels()//4-1):
+		for y in range(0,strip.numPixels()//8):
 			strip.setPixelColor(4+y*8+i, Color(0,255,255))
 			strip.setPixelColor(3+y*8-i, Color(0,255,255))
 		strip.show()
 		time.sleep(0.1)
-	for i in range(0,strip.numPixels()/4-1):
-		for y in range(0,strip.numPixels()/8):
+	for i in range(0,strip.numPixels()//4-1):
+		for y in range(0,strip.numPixels()//8):
 			strip.setPixelColor(7+y*8-i, Color(255,255,0))
 			strip.setPixelColor(y*8+i, Color(255,255,0))
 		strip.show()
