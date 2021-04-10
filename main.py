@@ -13,21 +13,24 @@ LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
 LED_BRIGHTNESS = 15    # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 
-root_path = '/home/pi'
-wav_name = 'rodent.wav'
+PATH = '/home/pi/sounds'
+WAV_HAPPY = 'happy-1.wav'
+WAV_SAD = 'sad-1.wav'
+WAV_ANGRY = 'angry-1.wav'
+WAV_FEAR = 'fear-1.wav'
 
 if __name__ == '__main__':
-    wav_path = os.path.join(root_path, wav_name)
+    wav_path = os.path.join(PATH, WAV_ANGRY)
     wav_obj = simpad.WaveObject.from_wave_file(wav_path)
     strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
     try:
         play_obj = sound.play_audio(wav_obj)
         strip.begin()
         
-        led.happy_eyes(strip, 50, 2, 192)
-        led.sad_eyes(strip, 50, 192)
-        led.fear_eyes(strip, 25, 192, 1)
-        led.angry_eyes(strip, 25, 192)
+        # led.happy_eyes(strip, 50, 2, 192)
+        # led.sad_eyes(strip, 50, 192)
+        # led.fear_eyes(strip, 25, 192, 1)
+        # led.angry_eyes(strip, 25, 192)
         # time.sleep(1.5)
         
         strip._cleanup()

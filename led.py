@@ -5,6 +5,10 @@ LED_COL        = 5       # Column of LED pixels
 
 PERIOD = 3 #seconds
 
+class LEDEyes():
+	def __init__(self):
+		pass
+
 def happy_eyes(strip_inst, steps, blink, diff):
 	red_func = lambda intensity, col: int(intensity * diff if (col in [0,LED_COL-1]) else 0)
 	green_func = lambda intensity, col: int(0xff - intensity * diff)

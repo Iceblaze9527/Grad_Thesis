@@ -1,3 +1,8 @@
+class Sounds():
+    def __init__(self):
+        pass
+
+
 def play_audio(obj):
     return obj.play()
 
