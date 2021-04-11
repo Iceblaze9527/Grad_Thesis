@@ -17,6 +17,11 @@ WAV_SAD = 'sad-1.wav'
 WAV_FEAR = 'fear-1.wav'
 WAV_ANGRY = 'angry-1.wav'
 
+# ctrl.send_action_signal() in rl branch: get action signal and acts accordingly
+# init and if-else
+# done within 3 secs
+# success and fail cmd?
+
 if __name__ == '__main__':
     sound_happy = SoundPlay(PATH, WAV_HAPPY)
     sound_sad = SoundPlay(PATH, WAV_SAD)
