@@ -1,7 +1,14 @@
+import time
+
 from led import LEDEyes
 from sound import SoundPlay
 
-int_state_space = ['HAPPY', 'SAD', 'FEAR', 'ANGRY']
+# TODO: ready, success and fail cmd?
+# TODO: param.py
+
+action_space = ['HAP_LOOK', 'SAD_LOOK', 'FEA_LOOK', 'ANG_LOOK']
+PATH = '/home/pi/sounds'
+WAV_FILES = ['happy-1.wav', 'sad-1.wav', 'fear-1.wav', 'angry-1.wav']
 
 LED_ROW        = 5       # Row of LED pixels
 LED_COL        = 5       # Column of LED pixels
@@ -14,43 +21,33 @@ LED_CHANNEL    = 0       # PWM channel index
 
 PERIOD = 3 #seconds
 
-PATH = '/home/pi/sounds'
-WAV_HAPPY = 'happy-1.wav'
-WAV_SAD = 'sad-1.wav'
-WAV_FEAR = 'fear-1.wav'
-WAV_ANGRY = 'angry-1.wav'
+class OutputDevices():
+    def __init__(self):
+        self.led = LEDEyes(LED_ROW, LED_COL, PERIOD, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
 
-# ctrl.send_action_signal() in rl branch: get action signal and acts accordingly
-# init and if-else
-# done within 3 secs
-# ready, success and fail cmd?
-# _cleanup() method
-
-def send_action_command(action):
-    sound_happy = SoundPlay(PATH, WAV_HAPPY)
-    sound_sad = SoundPlay(PATH, WAV_SAD)
-    sound_fear = SoundPlay(PATH, WAV_FEAR)
-    sound_angry = SoundPlay(PATH, WAV_ANGRY)
-    
-    led = LEDEyes(LED_ROW, LED_COL, PERIOD, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-    
-    try:
-        sound_happy.play()
-        led.happy_eyes(50, 2, 192)
-        sound_happy.stop()
-
-        sound_sad.play()
-        led.sad_eyes(50, 192)
-        sound_sad.stop()
+    def exec_action(self, action):
+        sound = SoundPlay(PATH, WAV_FILES[action])
         
-        sound_fear.play()
-        led.fear_eyes(25, 192, 1)
-        sound_fear.stop()
+        sound.play()
+        if action_space[action] == 'HAP_LOOK':
+            (self.led).happy_eyes(50, 2, 192)
+        elif action_space[action] == 'SAD_LOOK':
+            (self.led).sad_eyes(50, 192)
+        elif action_space[action] == 'FEA_LOOK':
+            (self.led).fear_eyes(25, 192, 1)
+        elif action_space[action] == 'ANG_LOOK':
+            (self.led).angry_eyes(25, 192)
+        sound.stop()
+    
+    def closeall(self):
+        (self.led)._cleanup()
 
-        sound_angry.play()
-        led.angry_eyes(25, 192)
-        sound_angry.stop()
-    except KeyboardInterrupt:
-        exit()
-
-send_action_command(0)
+# if __name__ == '__main__':
+#     try:
+#         outputs = OutputDevices()
+#         for i in range(len(action_space)):
+#             outputs.exec_action(i)
+#             time.sleep(1)
+#     except KeyboardInterrupt:
+#         outputs.closeall()
+#         exit()
