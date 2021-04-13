@@ -10,8 +10,8 @@ action_space = ['HAP_LOOK', 'SAD_LOOK', 'FEA_LOOK', 'ANG_LOOK']
 PATH = '/home/pi/sounds'
 WAV_FILES = ['happy-1.wav', 'sad-1.wav', 'fear-1.wav', 'angry-1.wav']
 
-LED_ROW        = 5       # Row of LED pixels
-LED_COL        = 5       # Column of LED pixels
+LED_ROW        = 4       # Row of LED pixels
+LED_COL        = 8       # Column of LED pixels
 LED_PIN        = 12      # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
@@ -30,7 +30,7 @@ class OutputDevices():
         
         sound.play()
         if action_space[action] == 'HAP_LOOK':
-            (self.led).happy_eyes(50, 2, 192)
+            (self.led).happy_eyes(50, 2, 128)
         elif action_space[action] == 'SAD_LOOK':
             (self.led).sad_eyes(50, 192)
         elif action_space[action] == 'FEA_LOOK':
@@ -40,14 +40,14 @@ class OutputDevices():
         sound.stop()
     
     def closeall(self):
-        (self.led)._cleanup()
+        (self.led.strip)._cleanup()
 
-# if __name__ == '__main__':
-#     try:
-#         outputs = OutputDevices()
-#         for i in range(len(action_space)):
-#             outputs.exec_action(i)
-#             time.sleep(1)
-#     except KeyboardInterrupt:
-#         outputs.closeall()
-#         exit()
+if __name__ == '__main__':
+    try:
+        outputs = OutputDevices()
+        for i in range(len(action_space)):
+            outputs.exec_action(i)
+            time.sleep(1)
+    except KeyboardInterrupt:
+        outputs.closeall()
+        exit()

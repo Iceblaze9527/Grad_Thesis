@@ -9,11 +9,10 @@ class LEDEyes():
 		self.strip = Adafruit_NeoPixel(led_row*led_col, *args)
 		(self.strip).begin()
 
-
 	def happy_eyes(self, steps, blink, diff):
-		_red_func = lambda intensity, col: int(intensity * diff if (col in [0,self.led_col-1]) else 0)
-		_green_func = lambda intensity, col: int(0xff - intensity * diff)
-		_blue_func = lambda intensity, col: 0x00
+		_red_func = lambda intensity, row: int(intensity * diff if (row in [0,self.led_row-1]) else 0)
+		_green_func = lambda intensity, row: int(0xff - intensity * diff)
+		_blue_func = lambda intensity, row: 0x00
 
 		rounds = steps // blink
 		half = rounds // 2
@@ -22,15 +21,15 @@ class LEDEyes():
 		for step in range(steps):
 			ratio = ((step % rounds) / half) if ((step % rounds) < half + 1) else ((rounds - (step % rounds)) / half)
 			
-			for j in range(self.led_col):
-				_red = _red_func(ratio, j)
-				_green = _green_func(ratio, j)
-				_blue = _blue_func(ratio, j)
+			for i in range(self.led_row):
+				_red = _red_func(ratio, i)
+				_green = _green_func(ratio, i)
+				_blue = _blue_func(ratio, i)
 
 				_rgb = int((_red << 16) | (_green << 8) | _blue)
 				
-				for i in range(self.led_row):
-					(self.strip).setPixelColor(j + self.led_row * i, _rgb)
+				for j in range(self.led_col):
+					(self.strip).setPixelColor(j + self.led_col * i, _rgb)
 			
 			(self.strip).show()
 			time.sleep(interval)
@@ -59,7 +58,7 @@ class LEDEyes():
 
 
 	def fear_eyes(self, steps, diff, width):
-		_jitt = lambda row, low_lst: diff if row in low_lst else 0
+		_jitt = lambda col, low_lst: diff if col in low_lst else 0
 
 		_red_func = lambda step, jitt: 0xff - jitt
 		_green_func = lambda step, jitt: 0xff - jitt
@@ -69,18 +68,18 @@ class LEDEyes():
 		interval = self.period / steps
 		
 		for step in range(steps):
-			low_lst = [(self.led_row - 1) if row == 0 else row - 1 for row in low_lst] if (step % (4 * width)) < (2 * width) \
-				else [0 if row == (self.led_row - 1) else row + 1 for row in low_lst]
+			low_lst = [(self.led_col - 1) if col == 0 else col - 1 for col in low_lst] if (step % (4 * width)) < (2 * width) \
+				else [0 if col == (self.led_col - 1) else col + 1 for col in low_lst]
 
-			for i in range(self.led_row):
-				_red = _red_func(step, _jitt(i, low_lst))
-				_green = _green_func(step, _jitt(i, low_lst))
-				_blue = _blue_func(step, _jitt(i, low_lst))
+			for j in range(self.led_col):
+				_red = _red_func(step, _jitt(j, low_lst))
+				_green = _green_func(step, _jitt(j, low_lst))
+				_blue = _blue_func(step, _jitt(j, low_lst))
 				
 				_rgb = int((_red << 16) | (_green << 8) | _blue)
 				
-				for j in range(self.led_col):
-					(self.strip).setPixelColor(j + self.led_row * i, _rgb)
+				for i in range(self.led_row):
+					(self.strip).setPixelColor(j + self.led_col * i, _rgb)
 			
 			(self.strip).show()
 			time.sleep(interval)
