@@ -21,7 +21,7 @@ def __get_filename(filename, parent_path):
 ## TODO: Param time variants
 AGENT_PAR = {'ext_state_vars': ['FOOD', 'TOXIN', 'BOOP', 'PULL'], 
     'ext_state_space': [], 
-    'int_state_space': ['HAPPY', 'SAD', 'FEAR', 'ANGRY'],
+    'int_state_space': ['ENERGY', 'COMFORT'], #max motivation
     'action_space': ['HAP_LOOK', 'SAD_LOOK', 'FEA_LOOK', 'ANG_LOOK'],
     'alpha': 0.5,# low if previous knowledge is valued more, else new knowledge
     'gamma': 0.9,# can neither be too low (not convergent) nor too high (for small state space)
@@ -38,11 +38,10 @@ INTENV_PAR = {
     'homeo_vars': ['ENERGY', 'COMFORT'],
     'hv_maxs': np.array([100,100]),
     'hv_mins': np.array([0,0]),
-    'coef_hv_ext_st': np.array([[6,0],[0,6]]),
-    ## a function list, return (hv_func[cnt] - hv_func[cnt - 1]) based on hv_func[cnt - 1]
-    'step_decays': [],
+    'coef_hv_ext_st': np.array([[6,-6,0,0],[0,0,6,-6]]),
+    'step_decays': [], ## a function list, return (hv_func[cnt] - hv_func[cnt - 1]) based on hv_func[cnt - 1]
     'act_levels': np.array([5,5]),
-    'coef_emo_motiv': np.array([[-0.3,-0.3], [0.5,0.1], [0.1,0.5], [0.1,0.1]]),
+    # 'coef_emo_motiv': np.array([[-0.3,-0.3], [0.5,0.1], [0.1,0.5], [0.1,0.1]]),
     'motiv_weights': np.array([0.5,0.5]),
     ## wb_min, wb_max
     'wb_limit':[0, 100]
@@ -63,7 +62,7 @@ assert INTENV_PAR['coef_hv_ext_st'].shape == (len(INTENV_PAR['homeo_vars']), len
 assert len(INTENV_PAR['act_levels']) == len(INTENV_PAR['homeo_vars'])
 assert (INTENV_PAR['act_levels'] > 0).all()
 
-assert INTENV_PAR['coef_emo_motiv'].shape == (len(AGENT_PAR['int_state_space']), len(INTENV_PAR['homeo_vars']))
+# assert INTENV_PAR['coef_emo_motiv'].shape == (len(AGENT_PAR['int_state_space']), len(INTENV_PAR['homeo_vars']))
 assert len(INTENV_PAR['step_decays']) == len(INTENV_PAR['homeo_vars'])
 assert len(INTENV_PAR['motiv_weights']) == len(INTENV_PAR['homeo_vars'])
 assert (INTENV_PAR['motiv_weights'] > 0).all()

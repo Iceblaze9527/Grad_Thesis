@@ -38,9 +38,9 @@ class IntEnv():
     def step(self, ext_states, cnt):
         motivs = self._motivations(ext_states)
 
-        int_state = np.argmax(np.dot(INTENV_PAR['coef_emo_motiv'], motivs)).reshape(-1)
-        ## TODO: if more than one emotions are dominant
+        int_state = np.argmax(motivs).reshape(-1)
         int_state = np.random.choice(int_state)
+        
         wb = IntEnv.wb_max - np.sum(INTENV_PAR['motiv_weights'] * motivs)
         wb = max([wb, IntEnv.wb_min])
 
