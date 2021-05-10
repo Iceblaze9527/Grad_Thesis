@@ -37,9 +37,6 @@ class IntEnv():
 
     def step(self, ext_states, cnt):
         motivs = self._motivations(ext_states)
-
-        int_state = np.argmax(motivs).reshape(-1)
-        int_state = np.random.choice(int_state)
         
         wb = IntEnv.wb_max - np.sum(INTENV_PAR['motiv_weights'] * motivs)
         wb = max([wb, IntEnv.wb_min])
@@ -47,4 +44,4 @@ class IntEnv():
         self._save_vars(self._hvs, cnt, 'Homeostatic Values')
         self._save_vars(motivs, cnt, 'Motivation Values')
         
-        return int_state, wb
+        return wb

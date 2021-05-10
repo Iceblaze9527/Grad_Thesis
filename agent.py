@@ -5,14 +5,13 @@ from param import AGENT_PAR, AGENT_LOG, RAND_SEED
 np.random.seed(RAND_SEED)
 
 class Agent():# Expected SARSA (On-policy implementation)
-    _state_space = len(AGENT_PAR['ext_state_space']) * len(AGENT_PAR['int_state_space'])
+    _state_space = len(AGENT_PAR['ext_state_space'])
     _action_space = len(AGENT_PAR['action_space'])
     
     def __init__(self):
         self._q_table = np.random.randn(Agent._state_space, Agent._action_space)
         self.file = open(AGENT_LOG, 'a')
 
-        self._get_state = lambda int_state, ext_states: (int_state << len(AGENT_PAR['ext_state_vars'])) + ext_states
         self._save_q_tab = lambda cnt: np.savetxt(fname=self.file, X=self._q_table, 
             fmt='%.3f', delimiter=',', newline='\n', header='Step %5d'%(cnt))
         
@@ -29,21 +28,18 @@ class Agent():# Expected SARSA (On-policy implementation)
         probas[best_action] += (1.0 - AGENT_PAR['epsilon'])
         return probas
 
-    def take_action(self, int_state, ext_states):# epsilon-greedy
+    def take_action(self, ext_state):# epsilon-greedy
         if np.random.rand() < AGENT_PAR['epsilon']:
             return np.random.choice(Agent._action_space)
         else:
-            return self._greedy_action_selection(self._get_state(int_state, ext_states))
+            return self._greedy_action_selection(ext_state)
 
-    def learn(self, int_state_old, ext_states_old, int_state_new, ext_states_new, action_old, reward, cnt):
-        state_old = self._get_state(int_state_old, ext_states_old)
-        state_new = self._get_state(int_state_new, ext_states_new)
-
-        state_new_probs = self._action_probs(state_new).reshape(-1)
-        state_new_q_val = (self._q_table[state_new, :]).reshape(-1)
+    def learn(self, ext_states_old, ext_states_new, action_old, reward, cnt):
+        state_new_probs = self._action_probs(ext_states_new).reshape(-1)
+        state_new_q_val = (self._q_table[ext_states_new, :]).reshape(-1)
         state_new_expct = np.sum(state_new_probs * state_new_q_val)
 
-        delta = AGENT_PAR['alpha'] * (reward + AGENT_PAR['gamma'] * state_new_expct - self._q_table[state_old, action_old])
-        self._q_table[state_old, action_old] += delta
+        delta = AGENT_PAR['alpha'] * (reward + AGENT_PAR['gamma'] * state_new_expct - self._q_table[ext_states_old, action_old])
+        self._q_table[ext_states_old, action_old] += delta
         
         self._save_q_tab(cnt)
