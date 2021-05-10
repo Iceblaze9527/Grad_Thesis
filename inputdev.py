@@ -72,13 +72,3 @@ class InputDevices():
         (self.button_2).close()
         GPIO.cleanup(TOUCH)
         (self.bus).close()
-
-# if __name__ == '__main__':
-#     try:
-#         inputs = InputDevices()
-#         while True:
-#             print(inputs.get_ext_states())
-#             time.sleep(0.05)
-#     except KeyboardInterrupt:
-#         inputs.closeall()
-#         exit()

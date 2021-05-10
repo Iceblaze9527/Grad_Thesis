@@ -12,7 +12,7 @@ WAV_FILES = ['happy-1.wav', 'sad-1.wav', 'fear-1.wav', 'angry-1.wav']
 
 LED_ROW        = 4       # Row of LED pixels
 LED_COL        = 8       # Column of LED pixels
-LED_PIN        = 12      # GPIO pin connected to the pixels (must support PWM!).
+LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
