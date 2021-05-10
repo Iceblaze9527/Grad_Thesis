@@ -4,11 +4,10 @@ from itertools import product
 
 import numpy as np
 
-## TODO: for more external states
 def __get_ext_state_space(ext_state_vars):
-    add_prefix = list(map(lambda var: [''.join(('DSB_',var)), ''.join(('ENV_',var))], ext_state_vars))
-    state_product = list(product(add_prefix[1], add_prefix[0]))
-    ext_state_space = list(map(lambda item: ' & '.join((item[0], item[1])), state_product))
+    add_prefix = list(map(lambda var: [''.join(('DSB_',var)), ''.join(('ENV_',var))], ext_state_vars))[::-1]
+    state_product = list(product(*add_prefix))
+    ext_state_space = list(map(lambda item: ' & '.join(item), state_product))
     return ext_state_space
 
 def __get_filename(filename, parent_path):
@@ -20,7 +19,7 @@ def __get_filename(filename, parent_path):
     return os.path.join(dir_path, filename)
 
 ## TODO: Param time variants
-AGENT_PAR = {'ext_state_vars': ['FOOD', 'PATT'], 
+AGENT_PAR = {'ext_state_vars': ['FOOD', 'TOXIN', 'BOOP', 'PULL'], 
     'ext_state_space': [], 
     'int_state_space': ['HAPPY', 'SAD', 'FEAR', 'ANGRY'],
     'action_space': ['HAP_LOOK', 'SAD_LOOK', 'FEA_LOOK', 'ANG_LOOK'],

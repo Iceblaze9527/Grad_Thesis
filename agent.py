@@ -2,8 +2,6 @@ import numpy as np
 
 from param import AGENT_PAR, AGENT_LOG, RAND_SEED
 
-## TODO: Different Algos: Inheritance and Polymorphism
-
 np.random.seed(RAND_SEED)
 
 class Agent():# Expected SARSA (On-policy implementation)
