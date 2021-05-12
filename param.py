@@ -37,15 +37,14 @@ INTENV_PAR = {
     'homeo_vars': ['ENERGY', 'COMFORT'],
     'hv_maxs': np.array([100,100]),
     'hv_mins': np.array([0,0]),
-    'coef_hv_ext_st': np.array([[7,-6,0,0],[0,0,7,-6]]),
+    'coef_hv_ext_st': np.array([[10,-8,0,0],[0,0,10,-8]]),
     'step_decays': [], ## a function list, return (hv_func[cnt] - hv_func[cnt - 1]) based on hv_func[cnt - 1]
     'act_levels': np.array([5,5]),
     'motiv_weights': np.array([0.5,0.5]),
-    ## wb_min, wb_max
-    'wb_limit':[0, 100]
+    'wb_limit':[0,100] ## wb_min, wb_max
 }
 
-linear_decay = lambda hv_old: 2
+linear_decay = lambda hv_old: 3
 ## TODO: more complex decay functions
 INTENV_PAR['step_decays'] = [linear_decay, linear_decay]
 
