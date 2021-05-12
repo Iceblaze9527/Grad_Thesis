@@ -37,7 +37,7 @@ INTENV_PAR = {
     'homeo_vars': ['ENERGY', 'COMFORT'],
     'hv_maxs': np.array([100,100]),
     'hv_mins': np.array([0,0]),
-    'coef_hv_ext_st': np.array([[6,-6,0,0],[0,0,6,-6]]),
+    'coef_hv_ext_st': np.array([[7,-6,0,0],[0,0,7,-6]]),
     'step_decays': [], ## a function list, return (hv_func[cnt] - hv_func[cnt - 1]) based on hv_func[cnt - 1]
     'act_levels': np.array([5,5]),
     'motiv_weights': np.array([0.5,0.5]),

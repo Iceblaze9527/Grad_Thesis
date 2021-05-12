@@ -62,7 +62,7 @@ if __name__=='__main__':
                 reward = well_being - wb_prev
                 wb_prev = well_being
                 action_new = agent.take_action(ext_states_new)
-                ctrl.send_action_cmd(action_new)##TODO: parallel
+                ctrl.send_action_cmd(action_new)
                 
                 agent.learn(ext_states_old, ext_states_new, action_old, reward, cnt)
                 

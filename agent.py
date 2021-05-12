@@ -9,7 +9,7 @@ class Agent():# Expected SARSA (On-policy implementation)
     _action_space = len(AGENT_PAR['action_space'])
     
     def __init__(self):
-        self._q_table = np.random.randn(Agent._state_space, Agent._action_space)
+        self._q_table = np.random.normal(scale=1, size=(Agent._state_space, Agent._action_space))#randomness, default scale=1
         self.file = open(AGENT_LOG, 'a')
 
         self._save_q_tab = lambda cnt: np.savetxt(fname=self.file, X=self._q_table, 

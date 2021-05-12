@@ -18,7 +18,8 @@ class IntEnv():
         print('Homeostatic Variables:', INTENV_PAR['homeo_vars'], file=self.file)
 
     def _update_homeo_vars(self, ext_states):
-        hv_news = self._hvs
+        hv_news = (self._hvs).copy()
+        
         for ext_state, gain in enumerate(INTENV_PAR['coef_hv_ext_st'].T):
             if (ext_states >> ext_state) % 2 == 1:
                 hv_news += gain.reshape(-1)
@@ -26,7 +27,8 @@ class IntEnv():
         dec_vals = [decay(hv_old) for decay, hv_old in zip(INTENV_PAR['step_decays'], self._hvs)]
         hv_news = np.where(hv_news - self._hvs, hv_news, self._hvs - dec_vals)
         hv_news = np.clip(hv_news, INTENV_PAR['hv_mins'], INTENV_PAR['hv_maxs'])
-        self._hvs = hv_news
+        
+        self._hvs = (hv_news).copy()
     
     def _motivations(self, ext_states):
         self._update_homeo_vars(ext_states)
@@ -42,6 +44,5 @@ class IntEnv():
         wb = max([wb, IntEnv.wb_min])
 
         self._save_vars(self._hvs, cnt, 'Homeostatic Values')
-        self._save_vars(motivs, cnt, 'Motivation Values')
         
         return wb
