@@ -37,7 +37,7 @@ AGENT_PAR = {'ext_state_vars': ['FOOD', 'TOXIN', 'BOOP', 'PULL'],
     'epsilon': 0.1,# can decline over time. Soft action selection policies include epsilon-greedy, epsilon-soft and softmax, etc..
     'rand_seed': 17,
     'rand_scale': 1,# the scale for init wb sampled from binom distrib for the q-table
-    'logfile' = __get_filename('agent.txt', LOG_PATH)
+    'logfile': __get_filename('agent.txt', LOG_PATH)
     }
 
 AGENT_PAR['ext_state_space'] = __get_ext_state_space(AGENT_PAR['ext_state_vars'])
@@ -62,7 +62,7 @@ INTENV_PAR = {
     'wb_limit':[0,100], # wb_min, wb_max
     'rand_seed': 17,
     'init_expct': 0.6, # the expct of init hv = hv_min + init_expct * (hv_max - hv_min)
-    'logfile': = __get_filename('int_env.txt', LOG_PATH)
+    'logfile': __get_filename('int_env.txt', LOG_PATH)
 }
 
 linear_decay = lambda hv_old: 3
@@ -81,22 +81,18 @@ assert (INTENV_PAR['motiv_weights'] > 0).all()
 assert INTENV_PAR['wb_limit'][0]< INTENV_PAR['wb_limit'][1]
 assert (INTENV_PAR['init_expct'] > 0) & (INTENV_PAR['init_expct'] < 1)
 
-assert np.sum(INTENV_PAR['motiv_weights'] * (INTENV_PAR['hv_maxs'] - INTENV_PAR['act_levels'] - INTENV_PAR['hv_mins'])) >= np.diff(INTENV_PAR['wb_limit'])
-##
-
 #-----------
 # Notes
 #-----------
 
-## max(c_hs[hv, :]) > max(decay(hv)) (there is always a means to increase/decrease it)
-
 """
+1. examine internal environment parameters
 1.1 examine the reward expectation under the supposition that each external state appears under the same probability (do a quick experiment to get an average! conditional values in the dynamics make calculation not worth the effort)
 1.2 tune the params to keep the expectation as close to zero as possible. this means under the supposition above, the well-being increase/decrease is purely a result of effective/destructive learning, rather than a natural drift caused by the inputs.
  - positive drift may make training faster, but is theoretically more like a trick, i.e., external states are on the whole favorable to the agent
  - negative drift needs more effort to counter, and it also implies that external states are on the whole hostile to the agent
  - so both are not encouraged
-2. estimate reward: reward ~ sum(i)(theta[i] * (hv[i][t+1] - hv[i][t]))
-3. estimate q-val: delta = alpha * (reward + gamma * ~avr(q(s[t+1], a[:])) - q(s[t], a[t]))
-4. estimate wb: wb = wb_max - sum(i)(theta[i] * motiv[i]) ~ wb_max - sum(i)(theta[i] * (hv_max[i] - hv_min[i]))
+2. how to estimate reward: reward ~ sum(i)(theta[i] * (hv[i][t+1] - hv[i][t]))
+3. how to estimate q-val: delta = alpha * (reward + gamma * ~avr(q(s[t+1], a[:])) - q(s[t], a[t]))
+4. how to estimate wb: wb = wb_max - sum(i)(theta[i] * motiv[i]) ~ wb_max - sum(i)(theta[i] * (hv_max[i] - hv_min[i]))
 """
