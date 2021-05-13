@@ -1,16 +1,16 @@
 import numpy as np
 
-from param import INTENV_PAR, INTENV_LOG, RAND_SEED
+from param import INTENV_PAR
 
-np.random.seed(RAND_SEED)
+np.random.seed(INTENV_PAR['rand_seed'])
 
 class IntEnv():
     wb_min = INTENV_PAR['wb_limit'][0]
     wb_max = INTENV_PAR['wb_limit'][1]
     
     def __init__(self):
-        self._hvs = np.random.binomial(n = INTENV_PAR['hv_maxs'] - INTENV_PAR['hv_mins'], p = 0.5) + INTENV_PAR['hv_mins']
-        self.file = open(INTENV_LOG, 'a')
+        self._hvs = np.random.binomial(n = INTENV_PAR['hv_maxs'] - INTENV_PAR['hv_mins'], p = INTENV_PAR['init_expct']) + INTENV_PAR['hv_mins']
+        self.file = open(INTENV_PAR['logfile'], 'a')
         
         self._save_vars = lambda var, cnt, var_type: np.savetxt(fname=self.file, X=var, fmt='%.3f', 
             delimiter=',', newline='\n', header='Step %5d: %s'%(cnt, var_type))
@@ -26,6 +26,7 @@ class IntEnv():
         
         dec_vals = [decay(hv_old) for decay, hv_old in zip(INTENV_PAR['step_decays'], self._hvs)]
         hv_news = np.where(hv_news - self._hvs, hv_news, self._hvs - dec_vals)
+        
         hv_news = np.clip(hv_news, INTENV_PAR['hv_mins'], INTENV_PAR['hv_maxs'])
         
         self._hvs = (hv_news).copy()
