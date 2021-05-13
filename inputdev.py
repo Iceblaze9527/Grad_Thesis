@@ -38,7 +38,7 @@ class InputDevices():
         self.bus.write_byte(ADDR,AIN0)
         self.bus.read_byte(ADDR)#
     
-    def get_ext_states(self):
+    def get_ext_states(self):##TODO: real-time implementation
         t0 = time.time()
         ext_state_samples = np.zeros((1, len(ext_state_vars)), dtype=np.uint8)
         

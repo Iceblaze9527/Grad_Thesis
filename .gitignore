@@ -1,12 +1,3 @@
 **.__pycache__
-**.ipynb_checkpoints/
 **.vscode/
-**.Font/
 **logs/
-
-*.mp3
-*.jpg
-*.bmp
-*.png
-*.svg
-*.pyc
