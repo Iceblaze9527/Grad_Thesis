@@ -1,56 +1,42 @@
 import time
 
-import numpy as np
-
 import smbus
-from gpiozero import Button
+import numpy as np
 import RPi.GPIO as GPIO
+from gpiozero import Button
 
-## TODO: param.py
-ext_state_vars = ['FOOD', 'TOXIN', 'BOOP', 'PULL']
-
-#FOOD: BUTTON
-BUTTON_1 = 27
-#TOXIN: BUTTON
-BUTTON_2 = 25
-#BOOP: TOUCH SENSOR
-TOUCH = 23
-#PULL: JOYSTICK
-ADDR = 0x48
-AIN0 = 0x00
-AIN1 = 0x01
-THRESHOLD = 192
-
-TIME_LIMIT = 2#secs
-SAMPLE_INTERVAL = 0.04#sec
-MIN_EFF_INPUT_LEN = 5#samples
+from param import INPUT_PAR
 
 class InputDevices():
     def __init__(self):
-        self.button_1 = Button(pin=BUTTON_1, pull_up=True)
-        self.button_2 = Button(pin=BUTTON_2, pull_up=True)
+        self.button_1 = Button(pin=INPUT_PAR['button_food'], pull_up=True)
+        self.button_2 = Button(pin=INPUT_PAR['button_toxin'], pull_up=True)
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
-        GPIO.setup(TOUCH, GPIO.IN)
+        GPIO.setup(INPUT_PAR['boop'], GPIO.IN)
 
         self.bus = smbus.SMBus(1)
-        self.bus.write_byte(ADDR,AIN0)
-        self.bus.read_byte(ADDR)#
+        self.bus.write_byte(INPUT_PAR['adc_addr'],INPUT_PAR['adc_ain0'])
+        self.bus.read_byte(INPUT_PAR['adc_addr'])
     
-    def get_ext_states(self):##TODO: real-time implementation
+    def get_ext_states(self):
         t0 = time.time()
-        ext_state_samples = np.zeros((1, len(ext_state_vars)), dtype=np.uint8)
+        ext_state_samples = np.zeros((1, len(INPUT_PAR['ext_state_vars'])), dtype=np.uint8)
         
-        while (time.time() - t0 < TIME_LIMIT):
-            sample = np.array([(self.button_1).value, (self.button_2).value, GPIO.input(TOUCH), \
-                1 if (self.bus).read_byte(ADDR) > THRESHOLD else 0]).reshape(1,-1)
+        while (time.time() - t0 < INPUT_PAR['period']):
+            sample = np.array([
+                (self.button_1).value, 
+                (self.button_2).value, 
+                GPIO.input(INPUT_PAR['boop']), 
+                1 if (self.bus).read_byte(INPUT_PAR['adc_addr']) > INPUT_PAR['adc_th'] else 0]).reshape(1,-1)
+            
             ext_state_samples = np.concatenate((ext_state_samples, sample), axis=0)
 
-            time.sleep(SAMPLE_INTERVAL)
+            time.sleep(INPUT_PAR['samp_int'])
 
         ext_states_lst = []
-        for col in range(len(ext_state_vars)):
+        for col in range(len(INPUT_PAR['ext_state_vars'])):
             samples = ext_state_samples[1:,col]
             differ = np.diff(samples)
             pulse = np.flatnonzero(differ)
@@ -61,7 +47,7 @@ class InputDevices():
             
             voltage = np.split(samples, (pulse + 1))
             high_cnt = map(lambda x:len(x), voltage[1::2] if differ[pulse[0]] == 1 else voltage[::2])
-            ext_states_lst.append(1 if max(high_cnt) >= MIN_EFF_INPUT_LEN else 0)
+            ext_states_lst.append(1 if max(high_cnt) >= INPUT_PAR['min_eff_len'] else 0)
         
         ext_states = sum([state << index for index, state in enumerate(ext_states_lst)])
 
@@ -70,5 +56,5 @@ class InputDevices():
     def closeall(self):
         (self.button_1).close()
         (self.button_2).close()
-        GPIO.cleanup(TOUCH)
+        GPIO.cleanup(INPUT_PAR['boop'])
         (self.bus).close()

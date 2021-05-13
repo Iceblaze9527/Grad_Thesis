@@ -2,10 +2,10 @@ import time
 from rpi_ws281x import Adafruit_NeoPixel
 
 class LEDEyes():
-	def __init__(self, led_row, led_col, period, *args):
+	def __init__(self, period, led_row, led_col, *args):
+		self.period = period
 		self.led_row = led_row
 		self.led_col = led_col
-		self.period = period
 		self.strip = Adafruit_NeoPixel(led_row*led_col, *args)
 		(self.strip).begin()
 
@@ -105,3 +105,8 @@ class LEDEyes():
 			
 			(self.strip).show()
 			time.sleep(interval)
+		
+	def success_eyes(self):
+		pass
+	def fail_eyes(self):
+		pass
