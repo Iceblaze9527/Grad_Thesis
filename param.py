@@ -82,20 +82,9 @@ assert INTENV_PAR['wb_limit'][0]< INTENV_PAR['wb_limit'][1]
 assert (INTENV_PAR['init_expct'] > 0) & (INTENV_PAR['init_expct'] < 1)
 
 #-----------
-# Notes
+# Input Devices
 #-----------
 
-"""
-1. examine internal environment parameters
-1.1 examine the reward expectation under the supposition that each external state appears under the same probability (do a quick experiment to get an average! conditional values in the dynamics make calculation not worth the effort)
-1.2 tune the params to keep the expectation as close to zero as possible. this means under the supposition above, the well-being increase/decrease is purely a result of effective/destructive learning, rather than a natural drift caused by the inputs.
- - positive drift may make training faster, but is theoretically more like a trick, i.e., external states are on the whole favorable to the agent
- - negative drift needs more effort to counter, and it also implies that external states are on the whole hostile to the agent
- - so both are not encouraged
-2. how to estimate reward: reward ~ sum(i)(theta[i] * (hv[i][t+1] - hv[i][t]))
-3. how to estimate q-val: delta = alpha * (reward + gamma * ~avr(q(s[t+1], a[:])) - q(s[t], a[t]))
-4. how to estimate wb: wb = wb_max - sum(i)(theta[i] * motiv[i]) ~ wb_max - sum(i)(theta[i] * (hv_max[i] - hv_min[i]))
-"""
 INPUT_PAR = {
     'ext_state_vars':['FOOD', 'TOXIN', 'BOOP', 'PULL'],
     'button_food':27,
@@ -108,6 +97,10 @@ INPUT_PAR = {
     'samp_int':0.1,# in seconds
     'min_eff_len':10# samples
 }
+
+#-----------
+# Output Devices
+#-----------
 
 OUTPUT_PAR = {
     'action_space': ['HAP_LOOK', 'SAD_LOOK', 'FEA_LOOK', 'ANG_LOOK', 'SUCCESS', 'FAIL'],
@@ -125,3 +118,19 @@ OUTPUT_PAR = {
         'LED_CHANNEL': 0# PWM channel index
     }
 }
+
+#-----------
+# Notes
+#-----------
+
+"""
+1. examine internal environment parameters
+1.1 examine the reward expectation under the supposition that each external state appears under the same probability (do a quick experiment to get an average! conditional values in the dynamics make calculation not worth the effort)
+1.2 tune the params to keep the expectation as close to zero as possible. this means under the supposition above, the well-being increase/decrease is purely a result of effective/destructive learning, rather than a natural drift caused by the inputs.
+ - positive drift may make training faster, but is theoretically more like a trick, i.e., external states are on the whole favorable to the agent
+ - negative drift needs more effort to counter, and it also implies that external states are on the whole hostile to the agent
+ - so both are not encouraged
+2. how to estimate reward: reward ~ sum(i)(theta[i] * (hv[i][t+1] - hv[i][t]))
+3. how to estimate q-val: delta = alpha * (reward + gamma * ~avr(q(s[t+1], a[:])) - q(s[t], a[t]))
+4. how to estimate wb: wb = wb_max - sum(i)(theta[i] * motiv[i]) ~ wb_max - sum(i)(theta[i] * (hv_max[i] - hv_min[i]))
+"""

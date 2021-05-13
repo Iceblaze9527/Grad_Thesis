@@ -1,22 +1,22 @@
 import time
 
-import control as ctrl
-
-from env import IntEnv
 from agent import Agent
+from env import IntEnv
 from logger import Logger
+from inputdev import InputDevices
+from outputdev import OutputDevices
 
 if __name__=='__main__':
     agent = Agent()
     int_env = IntEnv()
     log = Logger()
+    inputs = InputDevices()
+    outputs = OutputDevices()
     
     cnt = 0
     t0 = time.process_time()
 
-    ext_states_old = ctrl.get_ext_states()
-    if ext_states_old == -1:
-        exit(1)
+    ext_states_old = inputs.get_ext_states()
     
     well_being = int_env.step(ext_states_old, cnt)
     action_old = agent.take_action(ext_states_old)
@@ -30,17 +30,15 @@ if __name__=='__main__':
         t_st=t0)
 
     while True:
+        cnt += 1
         t_start = time.process_time()
 
-        ext_states_new = ctrl.get_ext_states()
-        if ext_states_new == -1:
-            continue
+        ext_states_new = inputs.get_ext_states()
         
-        cnt += 1
         well_being = int_env.step(ext_states_new, cnt)
         
-        if well_being == int_env.wb_max:## Halt
-            ctrl.send_action_cmd('SUCCESS')
+        if well_being == int_env.wb_max:
+            outputs.exec_action(4)##
             log.step_log(
                 cnt=cnt, 
                 s_ext=ext_states_new,
@@ -49,8 +47,8 @@ if __name__=='__main__':
                 t_st=t_start)
             break
         else:
-            if well_being == int_env.wb_min:## Halt
-                ctrl.send_action_cmd('FAIL')
+            if well_being == int_env.wb_min:
+                outputs.exec_action(5)##
                 log.step_log(
                     cnt=cnt, 
                     s_ext=ext_states_new,
@@ -62,7 +60,7 @@ if __name__=='__main__':
                 reward = well_being - wb_prev
                 wb_prev = well_being
                 action_new = agent.take_action(ext_states_new)
-                ctrl.send_action_cmd(action_new)
+                outputs.exec_action(action_new)
                 
                 agent.learn(ext_states_old, ext_states_new, action_old, reward, cnt)
                 
@@ -77,25 +75,12 @@ if __name__=='__main__':
                 action_old = action_new
 
     log.term_log(t0)
+    
     (agent.file).close()
     (int_env.file).close()
-
-# END_OF_FILE
-from inputdev import InputDevices
-from outputdev import OutputDevices
-
-try:
-    inputs = InputDevices()
-    outputs = OutputDevices()
-    
-    ext_states_old = inputs.get_ext_states()
-    
-    while True:
-        ext_states_new = inputs.get_ext_states()
-        print(ext_states_new)
-        outputs.exec_action(5)
-
-except KeyboardInterrupt:
     inputs.closeall()
     outputs.closeall()
+    
     exit()
+
+# END_OF_FILE
