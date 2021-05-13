@@ -1,5 +1,3 @@
-import time
-
 from led import LEDEyes
 from sound import SoundPlay
 
@@ -22,9 +20,9 @@ class OutputDevices():
         elif OUTPUT_PAR['action_space'][action] == 'ANG_LOOK':
             (self.led).angry_eyes(25, 192)
         elif OUTPUT_PAR['action_space'][action] == 'SUCCESS':
-            pass ##(self.led).success_eyes()
+            (self.led).success_eyes()
         elif OUTPUT_PAR['action_space'][action] == 'FAIL':
-            pass ##(self.led).fail_eyes()
+            (self.led).fail_eyes()
         sound.stop()
     
     def closeall(self):

@@ -107,6 +107,36 @@ class LEDEyes():
 			time.sleep(interval)
 		
 	def success_eyes(self):
-		pass
+		_red = 0xff
+		_green = 0x00
+		_blue = 0xff
+
+		_rgb = int((_red << 16) | (_green << 8) | _blue)
+		
+		for i in range((self.strip).numPixels()):
+			(self.strip).setPixelColor(i, 0)
+		
+		(self.strip).setPixelColor(2, _rgb)
+		(self.strip).setPixelColor(5, _rgb)
+		(self.strip).setPixelColor(9, _rgb)
+		(self.strip).setPixelColor(10, _rgb)
+		(self.strip).setPixelColor(11, _rgb)
+		(self.strip).setPixelColor(12, _rgb)
+		(self.strip).setPixelColor(13, _rgb)
+		(self.strip).setPixelColor(14, _rgb)
+		(self.strip).setPixelColor(18, _rgb)
+		(self.strip).setPixelColor(19, _rgb)
+		(self.strip).setPixelColor(20, _rgb)
+		(self.strip).setPixelColor(21, _rgb)
+		(self.strip).setPixelColor(27, _rgb)
+		(self.strip).setPixelColor(28, _rgb)
+
+		(self.strip).show()
+		time.sleep(self.period)
+	
 	def fail_eyes(self):
-		pass
+		for i in range((self.strip).numPixels()):
+			(self.strip).setPixelColor(i, 0)
+		
+		(self.strip).show()
+		time.sleep(self.period)
