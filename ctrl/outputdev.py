@@ -1,5 +1,8 @@
-from led import LEDEyes
-from sound import SoundPlay
+import sys 
+sys.path.append("..") 
+
+from ctrl.led import LEDEyes
+from ctrl.sound import SoundPlay
 
 from param import OUTPUT_PAR
 

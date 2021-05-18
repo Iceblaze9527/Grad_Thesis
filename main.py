@@ -1,17 +1,19 @@
 import time
 
-from agent import Agent
-from env import IntEnv
+from algo.agent import Agent
+from algo.env import IntEnv
+
+from ctrl.inputdev import InputDevices
+from ctrl.outputdev import OutputDevices
+
 from logger import Logger
-from inputdev import InputDevices
-from outputdev import OutputDevices
 
 if __name__=='__main__':
     agent = Agent()
     int_env = IntEnv()
-    log = Logger()
     inputs = InputDevices()
     outputs = OutputDevices()
+    log = Logger()
     
     cnt = 0
     t0 = time.process_time()

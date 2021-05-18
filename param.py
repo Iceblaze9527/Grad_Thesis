@@ -4,11 +4,9 @@ from itertools import product
 
 import numpy as np
 
-def __get_ext_state_space(ext_state_vars):
-    add_prefix = list(map(lambda var: [''.join(('DSB_',var)), ''.join(('ENV_',var))], ext_state_vars))[::-1]
-    state_product = list(product(*add_prefix))
-    ext_state_space = list(map(lambda item: ' & '.join(item), state_product))
-    return ext_state_space
+#-----------
+# Logs
+#-----------
 
 def __get_filename(filename, parent_path):
     timestamp = time.strftime("%y%m%d_%H.%M.%S", time.localtime()) 
@@ -18,16 +16,18 @@ def __get_filename(filename, parent_path):
 
     return os.path.join(dir_path, filename)
 
-#-----------
-# Logs
-#-----------
-
 LOG_PATH = './logs'
 MAIN_LOG = __get_filename('train.log', LOG_PATH)
 
 #-----------
 # Agents
 #-----------
+
+def __get_ext_state_space(ext_state_vars):
+    add_prefix = list(map(lambda var: [''.join(('DSB_',var)), ''.join(('ENV_',var))], ext_state_vars))[::-1]
+    state_product = list(product(*add_prefix))
+    ext_state_space = list(map(lambda item: ' & '.join(item), state_product))
+    return ext_state_space
 
 AGENT_PAR = {'ext_state_vars': ['FOOD', 'TOXIN', 'BOOP', 'PULL'], 
     'ext_state_space': [], 
