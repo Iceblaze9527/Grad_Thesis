@@ -15,19 +15,17 @@ if __name__=='__main__':
     outputs = OutputDevices()
     log = Logger()
     
-    cnt = 0
+    cnt = 1
     t0 = time.process_time()
 
     ext_states_old = inputs.get_ext_states()
-    
-    well_being = int_env.step(ext_states_old, cnt)
+    reward = int_env.step(ext_states_old, cnt)
     action_old = agent.take_action(ext_states_old)
-    wb_prev = well_being
 
     log.step_log(
         cnt=cnt, 
         s_ext=ext_states_old,
-        wb=well_being, reward=None, 
+        wb=int_env.wb, reward=reward, 
         action=action_old, 
         t_st=t0)
 
@@ -36,31 +34,28 @@ if __name__=='__main__':
         t_start = time.process_time()
 
         ext_states_new = inputs.get_ext_states()
+        reward = int_env.step(ext_states_new, cnt)
         
-        well_being = int_env.step(ext_states_new, cnt)
-        
-        if well_being == int_env.wb_max:
+        if int_env.wb == int_env.wb_max:
             outputs.exec_action(4)##
             log.step_log(
                 cnt=cnt, 
                 s_ext=ext_states_new,
-                wb=well_being, reward=None, 
+                wb=int_env.wb, reward=reward, 
                 action='SUCCESS', 
                 t_st=t_start)
             break
         else:
-            if well_being == int_env.wb_min:
+            if int_env.wb == int_env.wb_min:
                 outputs.exec_action(5)##
                 log.step_log(
                     cnt=cnt, 
                     s_ext=ext_states_new,
-                    wb=well_being, reward=None, 
+                    wb=int_env.wb, reward=reward, 
                     action='FAIL', 
                     t_st=t_start)
                 break
             else:
-                reward = well_being - wb_prev
-                wb_prev = well_being
                 action_new = agent.take_action(ext_states_new)
                 outputs.exec_action(action_new)
                 
@@ -69,7 +64,7 @@ if __name__=='__main__':
                 log.step_log(
                     cnt=cnt, 
                     s_ext=ext_states_new,
-                    wb=well_being, reward=reward, 
+                    wb=int_env.wb, reward=reward, 
                     action=action_new, 
                     t_st=t_start)
 

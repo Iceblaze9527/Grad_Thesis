@@ -13,12 +13,13 @@ class IntEnv():
     
     def __init__(self):
         self._hvs = np.random.binomial(n = INTENV_PAR['hv_maxs'] - INTENV_PAR['hv_mins'], p = INTENV_PAR['init_expct']) + INTENV_PAR['hv_mins']
+        self.wb = (self._get_wb()).copy()
         self.file = open(INTENV_PAR['logfile'], 'a')
         
         self._save_vars = lambda var, cnt, var_type: np.savetxt(fname=self.file, X=var, fmt='%.3f', 
             delimiter=',', newline='\n', header='Step %5d: %s'%(cnt, var_type))
-        
         print('Homeostatic Variables:', INTENV_PAR['homeo_vars'], file=self.file)
+        self._save_vars(self._hvs, 0, 'Homeostatic Values')
 
     def _update_homeo_vars(self, ext_states):
         hv_news = (self._hvs).copy()
@@ -34,19 +35,21 @@ class IntEnv():
         
         self._hvs = (hv_news).copy()
     
-    def _motivations(self, ext_states):
-        self._update_homeo_vars(ext_states)
+    def _get_wb(self):
         drives = INTENV_PAR['hv_maxs'] - self._hvs
         motivs = np.where(drives < INTENV_PAR['act_levels'], 0, drives)
-
-        return motivs
-
-    def step(self, ext_states, cnt):
-        motivs = self._motivations(ext_states)
-        
         wb = IntEnv.wb_max - np.sum(INTENV_PAR['motiv_weights'] * motivs)
         wb = max([wb, IntEnv.wb_min])
 
+        return wb
+
+    def step(self, ext_states, cnt):
+        self._update_homeo_vars(ext_states)
+        
+        wb = self._get_wb()
+        reward = wb - self.wb
+        self.wb = wb.copy()
+
         self._save_vars(self._hvs, cnt, 'Homeostatic Values')
         
-        return wb
+        return reward
