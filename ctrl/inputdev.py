@@ -6,17 +6,15 @@ import time
 import smbus
 import numpy as np
 import RPi.GPIO as GPIO
-from gpiozero import Button
 
 from param import INPUT_PAR
 
 class InputDevices():
     def __init__(self):
-        self.button_1 = Button(pin=INPUT_PAR['button_food'], pull_up=True)
-        self.button_2 = Button(pin=INPUT_PAR['button_toxin'], pull_up=True)
-
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
+        GPIO.setup(INPUT_PAR['food'], GPIO.IN)
+        GPIO.setup(INPUT_PAR['toxin'], GPIO.IN)
         GPIO.setup(INPUT_PAR['boop'], GPIO.IN)
 
         self.bus = smbus.SMBus(1)
@@ -29,8 +27,8 @@ class InputDevices():
         
         while (time.time() - t0 < INPUT_PAR['period']):
             sample = np.array([
-                (self.button_1).value, 
-                (self.button_2).value, 
+                int(any(list(map(lambda ch: GPIO.input(ch), INPUT_PAR['food'])))),
+                int(any(list(map(lambda ch: GPIO.input(ch), INPUT_PAR['toxin'])))),
                 GPIO.input(INPUT_PAR['boop']), 
                 1 if (self.bus).read_byte(INPUT_PAR['adc_addr']) > INPUT_PAR['adc_th'] else 0]).reshape(1,-1)
             

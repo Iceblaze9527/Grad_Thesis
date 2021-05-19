@@ -87,8 +87,8 @@ assert (INTENV_PAR['init_expct'] > 0) & (INTENV_PAR['init_expct'] < 1)
 
 INPUT_PAR = {
     'ext_state_vars':['FOOD', 'TOXIN', 'BOOP', 'PULL'],
-    'button_food':27,
-    'button_toxin':25,
+    'food':[17,27],
+    'toxin':[22,25],
     'boop':23,
     'adc_addr':0x48,
     'adc_ain0':0x00,
