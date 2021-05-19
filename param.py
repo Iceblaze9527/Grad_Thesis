@@ -93,7 +93,7 @@ INPUT_PAR = {
     'adc_addr':0x48,
     'adc_ain0':0x00,
     'adc_th':192,
-    'period':5,# in seconds
+    'period':4,# in seconds
     'samp_int':0.1,# in seconds
     'min_eff_len':10# samples
 }

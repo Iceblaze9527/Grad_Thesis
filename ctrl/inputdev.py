@@ -55,7 +55,7 @@ class InputDevices():
         return ext_states
 
     def closeall(self):
-        (self.button_1).close()
-        (self.button_2).close()
+        GPIO.cleanup(INPUT_PAR['food'])
+        GPIO.cleanup(INPUT_PAR['toxin'])
         GPIO.cleanup(INPUT_PAR['boop'])
         (self.bus).close()
