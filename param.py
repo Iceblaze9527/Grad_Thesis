@@ -24,7 +24,7 @@ MAIN_LOG = __get_filename('train.log', LOG_PATH)
 #-----------
 
 def __get_ext_state_space(ext_state_vars):
-    add_prefix = list(map(lambda var: [''.join(('DSB_',var)), ''.join(('ENV_',var))], ext_state_vars))[::-1]
+    add_prefix = list(map(lambda var: [''.join(('DSB_',var)), ''.join(('ENB_',var))], ext_state_vars))[::-1]
     state_product = list(product(*add_prefix))
     ext_state_space = list(map(lambda item: ' & '.join(item), state_product))
     return ext_state_space
@@ -86,7 +86,7 @@ assert (INTENV_PAR['init_expct'] > 0) & (INTENV_PAR['init_expct'] < 1)
 #-----------
 
 INPUT_PAR = {
-    'ext_state_vars':['FOOD', 'TOXIN', 'BOOP', 'PULL'],
+    'ext_state_vars':AGENT_PAR['ext_state_vars'],
     'food':[17,27],
     'toxin':[22,25],
     'boop':23,
@@ -103,7 +103,7 @@ INPUT_PAR = {
 #-----------
 
 OUTPUT_PAR = {
-    'action_space': ['HAP_LOOK', 'SAD_LOOK', 'FEA_LOOK', 'ANG_LOOK', 'SUCCESS', 'FAIL'],
+    'action_space': AGENT_PAR['action_space'],
     'wav_path': '/home/pi/sounds',
     'wav_files': ['happy-1.wav', 'sad-1.wav', 'fear-1.wav', 'angry-1.wav', 'happy-2.wav', 'sad-2.wav'],
     'period': 3,# in seconds
@@ -118,19 +118,3 @@ OUTPUT_PAR = {
         'LED_CHANNEL': 0# PWM channel index
     }
 }
-
-#-----------
-# Notes
-#-----------
-
-"""
-1. examine internal environment parameters
-1.1 examine the reward expectation under the supposition that each external state appears under the same probability (do a quick experiment to get an average! conditional values in the dynamics make calculation not worth the effort)
-1.2 tune the params to keep the expectation as close to zero as possible. this means under the supposition above, the well-being increase/decrease is purely a result of effective/destructive learning, rather than a natural drift caused by the inputs.
- - positive drift may make training faster, but is theoretically more like a trick, i.e., external states are on the whole favorable to the agent
- - negative drift needs more effort to counter, and it also implies that external states are on the whole hostile to the agent
- - so both are not encouraged
-2. how to estimate reward: reward ~ sum(i)(theta[i] * (hv[i][t+1] - hv[i][t]))
-3. how to estimate q-val: delta = alpha * (reward + gamma * ~avr(q(s[t+1], a[:])) - q(s[t], a[t]))
-4. how to estimate wb: wb = wb_max - sum(i)(theta[i] * motiv[i]) ~ wb_max - sum(i)(theta[i] * (hv_max[i] - hv_min[i]))
-"""

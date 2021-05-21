@@ -18,7 +18,7 @@ class Agent():# Expected SARSA (On-policy implementation)
         self._save_q_tab = lambda cnt: np.savetxt(fname=self.file, X=self._q_table, 
             fmt='%.3f', delimiter=',', newline='\n', header='Step %5d'%(cnt))
         
-        self._save_q_tab(0)
+        self._save_q_tab(1)
 
     def _greedy_action_selection(self, state):
         q_max = (np.argmax(self._q_table[state, :])).reshape(-1)

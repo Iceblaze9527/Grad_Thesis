@@ -16,20 +16,8 @@ if __name__=='__main__':
         outputs = OutputDevices()
         log = Logger()
         
-        cnt = 1
+        cnt = 0
         t0 = time.process_time()
-
-        ext_states_old = inputs.get_ext_states()
-        reward = int_env.step(ext_states_old, cnt)
-        action_old = agent.take_action(ext_states_old)
-        outputs.exec_action(action_old)
-
-        log.step_log(
-            cnt=cnt, 
-            s_ext=ext_states_old,
-            wb=int_env.wb, reward=reward, 
-            action=action_old, 
-            t_st=t0)
 
         while True:
             cnt += 1
@@ -39,7 +27,7 @@ if __name__=='__main__':
             reward = int_env.step(ext_states_new, cnt)
             
             if int_env.wb == int_env.wb_max:
-                outputs.exec_action(4)##
+                outputs.exec_action('SUCCESS')
                 log.step_log(
                     cnt=cnt, 
                     s_ext=ext_states_new,
@@ -49,7 +37,7 @@ if __name__=='__main__':
                 break
             else:
                 if int_env.wb == int_env.wb_min:
-                    outputs.exec_action(5)##
+                    outputs.exec_action('FAIL')
                     log.step_log(
                         cnt=cnt, 
                         s_ext=ext_states_new,
@@ -61,7 +49,8 @@ if __name__=='__main__':
                     action_new = agent.take_action(ext_states_new)
                     outputs.exec_action(action_new)
                     
-                    agent.learn(ext_states_old, ext_states_new, action_old, reward, cnt)
+                    if cnt != 1:
+                        agent.learn(ext_states_old, ext_states_new, action_old, reward, cnt)
                     
                     log.step_log(
                         cnt=cnt, 

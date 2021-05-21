@@ -14,7 +14,11 @@ class OutputDevices():
         sound = SoundPlay(OUTPUT_PAR['wav_path'], OUTPUT_PAR['wav_files'][action])
         
         sound.play()
-        if OUTPUT_PAR['action_space'][action] == 'HAP_LOOK':
+        if action == 'SUCCESS':
+            (self.led).success_eyes()
+        elif action == 'FAIL':
+            (self.led).fail_eyes()
+        elif OUTPUT_PAR['action_space'][action] == 'HAP_LOOK':
             (self.led).happy_eyes(50, 2, 128)
         elif OUTPUT_PAR['action_space'][action] == 'SAD_LOOK':
             (self.led).sad_eyes(50, 192)
@@ -22,10 +26,6 @@ class OutputDevices():
             (self.led).fear_eyes(25, 192, 1)
         elif OUTPUT_PAR['action_space'][action] == 'ANG_LOOK':
             (self.led).angry_eyes(25, 192)
-        elif OUTPUT_PAR['action_space'][action] == 'SUCCESS':
-            (self.led).success_eyes()
-        elif OUTPUT_PAR['action_space'][action] == 'FAIL':
-            (self.led).fail_eyes()
         sound.stop()
     
     def closeall(self):
