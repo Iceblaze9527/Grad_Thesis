@@ -61,7 +61,7 @@ INTENV_PAR = {
     'motiv_weights': np.array([0.5,0.5]),
     'wb_limit':[0,100], # wb_min, wb_max
     'rand_seed': 17,
-    'init_expct': 0.6, # the expct of init hv = hv_min + init_expct * (hv_max - hv_min)
+    'init_expct': np.array([0.5,0.5]), # the expct of init hv = hv_min + init_expct * (hv_max - hv_min)
     'logfile': __get_filename('int_env.txt', LOG_PATH)
 }
 
@@ -79,7 +79,7 @@ assert (INTENV_PAR['act_levels'] > 0).all()
 assert len(INTENV_PAR['motiv_weights']) == len(INTENV_PAR['homeo_vars'])
 assert (INTENV_PAR['motiv_weights'] > 0).all()
 assert INTENV_PAR['wb_limit'][0]< INTENV_PAR['wb_limit'][1]
-assert (INTENV_PAR['init_expct'] > 0) & (INTENV_PAR['init_expct'] < 1)
+assert (INTENV_PAR['init_expct'] > 0).all() & (INTENV_PAR['init_expct'] < 1).all()
 
 #-----------
 # Input Devices
@@ -94,7 +94,7 @@ INPUT_PAR = {
     'adc_ain0':0x00,
     'adc_th':192,
     'period':4,# in seconds
-    'samp_int':0.1,# in seconds
+    'samp_int':0.05,# in seconds
     'min_eff_len':10# samples
 }
 
