@@ -14,8 +14,8 @@ class Logger():
     
     def step_log(self, cnt, s_ext, wb, reward, action, t_st):
         action = action if isinstance(action, str) else AGENT_PAR['action_space'][action]
-        logging.info('Step %5d: S_ext = %-19s, Wb = %6.2f, Reward = %s, Action = %-8s, Elapsed_Time = %6.3f'
-        %(cnt, AGENT_PAR['ext_state_space'][s_ext], wb, str(reward).ljust(7,' '), action, time.process_time() - t_st))
+        logging.info('Step %3d: S_ext = %-19s, Wb = %6.2f, Reward = %s, Action = %-8s, Elapsed_Time = %6.3f'
+        %(cnt, AGENT_PAR['ext_state_space'][s_ext], wb, str(reward).ljust(5,' '), action, time.process_time() - t_st))
     
     def term_log(self, t0):
         logging.info('End of interaction.\nTotal Time: %8.3f'%(time.process_time() - t0))

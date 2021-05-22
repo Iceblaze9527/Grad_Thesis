@@ -16,10 +16,11 @@ class IntEnv():
         self.wb = (self._get_wb()).copy()
         self.file = open(INTENV_PAR['logfile'], 'a')
         
-        self._save_vars = lambda var, cnt, var_type: np.savetxt(fname=self.file, X=var, fmt='%.3f', 
-            delimiter=',', newline='\n', header='Step %5d: %s'%(cnt, var_type))
+        self._save_vars = lambda cnt: np.savetxt(fname=self.file, X=self._hvs, fmt='%.3f', 
+            delimiter='\n', newline='\n', header='Step %3d'%(cnt))
+        
         print('Homeostatic Variables:', INTENV_PAR['homeo_vars'], file=self.file)
-        self._save_vars(self._hvs, 0, 'Homeostatic Values')
+        self._save_vars(0)
 
     def _update_homeo_vars(self, ext_states):
         hv_news = (self._hvs).copy()
@@ -50,6 +51,6 @@ class IntEnv():
         reward = wb - self.wb
         self.wb = wb.copy()
 
-        self._save_vars(self._hvs, cnt, 'Homeostatic Values')
+        self._save_vars(cnt)
         
         return reward

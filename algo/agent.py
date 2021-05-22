@@ -16,7 +16,7 @@ class Agent():# Expected SARSA (On-policy implementation)
         self.file = open(AGENT_PAR['logfile'], 'a')
 
         self._save_q_tab = lambda cnt: np.savetxt(fname=self.file, X=self._q_table, 
-            fmt='%.3f', delimiter=',', newline='\n', header='Step %5d'%(cnt))
+            fmt='%.3f', delimiter=',', newline='\n', header='Step %3d'%(cnt))
         
         self._save_q_tab(1)
 
