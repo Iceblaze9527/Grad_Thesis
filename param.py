@@ -88,11 +88,11 @@ assert (INTENV_PAR['init_expct'] > 0).all() & (INTENV_PAR['init_expct'] < 1).all
 INPUT_PAR = {
     'ext_state_vars':AGENT_PAR['ext_state_vars'],
     'food':[17,27],
-    'toxin':[22,25],
+    'toxin':[22,24],
     'boop':23,
     'adc_addr':0x48,
     'adc_ain0':0x00,
-    'adc_th':192,
+    'adc_th':64,
     'period':4,# in seconds
     'samp_int':0.05,# in seconds
     'min_eff_len':10# samples

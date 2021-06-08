@@ -27,7 +27,7 @@ if __name__=='__main__':
             reward = int_env.step(ext_states_new, cnt)
             
             if int_env.wb == int_env.wb_max:
-                outputs.exec_action('SUCCESS')
+                outputs.exec_action(-2)
                 log.step_log(
                     cnt=cnt, 
                     s_ext=ext_states_new,
@@ -37,7 +37,7 @@ if __name__=='__main__':
                 break
             else:
                 if int_env.wb == int_env.wb_min:
-                    outputs.exec_action('FAIL')
+                    outputs.exec_action(-1)
                     log.step_log(
                         cnt=cnt, 
                         s_ext=ext_states_new,

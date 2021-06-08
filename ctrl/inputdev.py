@@ -30,7 +30,7 @@ class InputDevices():
                 int(any(list(map(lambda ch: GPIO.input(ch), INPUT_PAR['food'])))),
                 int(any(list(map(lambda ch: GPIO.input(ch), INPUT_PAR['toxin'])))),
                 GPIO.input(INPUT_PAR['boop']), 
-                1 if (self.bus).read_byte(INPUT_PAR['adc_addr']) > INPUT_PAR['adc_th'] else 0]).reshape(1,-1)
+                1 if (self.bus).read_byte(INPUT_PAR['adc_addr']) < INPUT_PAR['adc_th'] else 0]).reshape(1,-1)
             
             ext_state_samples = np.concatenate((ext_state_samples, sample), axis=0)
 
